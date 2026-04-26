@@ -93,6 +93,24 @@ EOF'
 
 sudo hdparm -S 180 /dev/sda 2>/dev/null
 
+echo "=== INSTALANDO ANYDESK (COM FALLBACK) ==="
+if [ "$(uname -m)" = "i686" ]; then
+    echo "⚠️ 32-bit detectado — tentando instalar AnyDesk..."
+
+    wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | sudo apt-key add - 2>/dev/null
+    echo "deb http://deb.anydesk.com/ all main" | sudo tee /etc/apt/sources.list.d/anydesk.list
+    sudo apt update
+
+    if sudo apt install -y anydesk; then
+        echo "✅ AnyDesk instalado com sucesso"
+    else
+        echo "❌ AnyDesk falhou — instalando VNC leve"
+        sudo apt install -y x11vnc
+    fi
+else
+    sudo apt install -y anydesk
+fi
+
 echo "=== CONFIGURANDO CONKY (HUD) ==="
 cat > /home/phobos/.conkyrc << 'EOF'
 conky.config = {
@@ -161,10 +179,8 @@ chown -R phobos:phobos /home/phobos/.config
 
 echo "=== FINALIZADO 🚀 ==="
 echo ""
-echo "Acesse:"
 echo "Samba: smb://IP_DO_SERVIDOR/server"
 echo "Web: http://IP_DO_SERVIDOR:8080"
 echo ""
-echo "Reinicie o sistema para aplicar tudo."
-
+echo "Reinicie o sistema."
 echo ""
