@@ -2,7 +2,7 @@
 
 <p align="center">
 Lightweight Home Server is a fully automated setup script designed to transform old or low-spec machines especially 32-bit systems into efficient, always-on home servers.
-It focuses on minimal resource usage while providing essential services such as file sharing, secure remote access, web-based file management, and real-time system monitoring through a desktop HUD.
+It focuses on minimal resource usage while providing essential services such as file sharing, secure remote access, web-based file management, remote desktop access, and real-time system monitoring through a desktop HUD.
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@ It focuses on minimal resource usage while providing essential services such as 
   </ul>
 </li>
 
-<li>Easy access from:
+<li>Access from:
   <ul>
     <li>Windows</li>
     <li>Linux</li>
@@ -49,18 +49,26 @@ It focuses on minimal resource usage while providing essential services such as 
 
 <td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 🌐 REMOTE ACCESS
+### 🌐 REMOTE ACCESS (VPN)
 
 <ul>
-<li>Secure VPN setup using Tailscale</li>
+<li>Secure VPN setup using :contentReference[oaicite:0]{index=0}</li>
 <br>
 <li>No port forwarding required</li>
 <br>
-<li>Access your server from anywhere using:
-  <ul>
-    <li>Private <code>.ts.net</code> address</li>
-  </ul>
-</li>
+<li>Access your server from anywhere via private network</li>
+</ul>
+
+<br>
+
+### 🖥️ REMOTE DESKTOP
+
+<ul>
+<li>Automatic installation of :contentReference[oaicite:1]{index=1}</li>
+<br>
+<li>Fallback to VNC (x11vnc) if unsupported on 32-bit systems</li>
+<br>
+<li>Full remote control of desktop environment</li>
 </ul>
 
 </td>
@@ -134,12 +142,7 @@ It focuses on minimal resource usage while providing essential services such as 
 <br>
 <li>Persistent across reboots</li>
 <br>
-<li>Ideal for:
-  <ul>
-    <li>Old mechanical drives</li>
-    <li>Energy saving</li>
-  </ul>
-</li>
+<li>Ideal for mechanical drives</li>
 </ul>
 
 </td>
@@ -156,10 +159,10 @@ It focuses on minimal resource usage while providing essential services such as 
 
 <br>
 
-### 📊 DESKTOP HUD (CONKY)
+### 📊 DESKTOP HUD
 
 <ul>
-<li>Real-time overlay system monitor</li>
+<li>Real-time overlay using :contentReference[oaicite:2]{index=2}</li>
 <br>
 <li>Displays:
   <ul>
@@ -191,6 +194,7 @@ It focuses on minimal resource usage while providing essential services such as 
 <li>Home NAS (Network Attached Storage)</li>
 <li>Always-on file server</li>
 <li>Personal cloud with remote access</li>
+<li>Remote desktop access environment</li>
 <li>Lightweight monitoring dashboard</li>
 </ul>
 
@@ -207,6 +211,9 @@ It focuses on minimal resource usage while providing essential services such as 
 <br>
 <li><b>Remote Access:</b><br>
 Via Tailscale network</li>
+<br>
+<li><b>Remote Desktop:</b><br>
+AnyDesk or VNC (fallback)</li>
 </ul>
 
 ---
@@ -214,10 +221,12 @@ Via Tailscale network</li>
 ## ⚠️ Notes
 
 <ul>
+<li>AnyDesk may not be fully supported on 32-bit systems</li>
+<li>Fallback to VNC is automatic if installation fails</li>
 <li>Samba user password is required during setup</li>
 <li>Network interface may need adjustment depending on hardware</li>
 <li>Designed for Linux Mint / Ubuntu-based systems</li>
-<li>Optimized specifically for 32-bit (i686) environments</li>
+<li>Optimized specifically for legacy hardware (i686)</li>
 </ul>
 
 ---
