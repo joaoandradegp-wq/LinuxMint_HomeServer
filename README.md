@@ -1,7 +1,7 @@
 <h1 align="center">🖥️ Lightweight Home Server</h1>
 
 <p align="center">
-Lightweight Home Server is a fully automated setup script designed to transform old or low-spec machines—especially 32-bit systems—into efficient, always-on home servers.
+Lightweight Home Server is a fully automated setup script designed to transform old or low-spec machines especially 32-bit systems into efficient, always-on home servers.
 It focuses on minimal resource usage while providing essential services such as file sharing, secure remote access, web-based file management, and real-time system monitoring through a desktop HUD.
 </p>
 
