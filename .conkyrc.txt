@@ -1,7 +1,7 @@
 conky.config = {
     alignment = 'top_right',
     gap_x = 20,
-    gap_y = 40,
+    gap_y = 5,
 
     minimum_width = 300,
     maximum_width = 300,
@@ -44,6 +44,13 @@ ${color grey}NETWORK (LAN):${color}
 Down: ${downspeed enp2s0}
 Up:   ${upspeed enp2s0}
 IP:   ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
+
+${color grey}FILE BROWSER:${color} \
+${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
+${color green}ONLINE${color}\
+${else}\
+${color red}OFFLINE${color}\
+${endif}
 
 ${color grey}TAILSCALE:${color}
 IP:   ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}

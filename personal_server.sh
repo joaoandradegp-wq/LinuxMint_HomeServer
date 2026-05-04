@@ -116,7 +116,7 @@ cat > /home/phobos/.conkyrc << 'EOF'
 conky.config = {
     alignment = 'top_right',
     gap_x = 20,
-    gap_y = 40,
+    gap_y = 5,
 
     minimum_width = 300,
     maximum_width = 300,
@@ -126,10 +126,10 @@ conky.config = {
     double_buffer = true,
 
     own_window = true,
-    own_window_type = 'override',
+    own_window_type = 'dock',
     own_window_transparent = true,
-
-    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    own_window_argb_visual = true,
+    own_window_argb_value = 0,
 
     draw_shades = false,
     draw_outline = false,
@@ -140,23 +140,35 @@ conky.config = {
 };
 
 conky.text = [[
-${color grey}CPU:${color} ${cpu}% ${cpubar 8}
+${color grey}CPU:${color} ${cpu}% @ ${freq_g}GHz ${cpubar 8}
+${color grey}Temp:${color} ${execi 5 sensors | grep 'Core 0' | awk '{print $3}'}
 
 ${color grey}RAM:${color}
 $mem / $memmax
 ${membar 8}
 
-${color grey}DISK:${color}
-${fs_used /} / ${fs_size /}
+${color grey}DISK 01 (HDD):${color} ${fs_used_perc /}% 
 ${fs_bar 8 /}
+${fs_used /} / ${fs_size /}
 
-${color grey}NETWORK:${color}
-↓ ${downspeed enp2s0}   ↑ ${upspeed enp2s0}
-${downspeedgraph enp2s0 30,300}
-${upspeedgraph enp2s0 30,300}
+${color grey}DISK 02 (USB):${color} ${fs_used_perc /mnt/hd2}% 
+${fs_bar 8 /mnt/hd2}
+${fs_used /mnt/hd2} / ${fs_size /mnt/hd2}
 
-${color grey}IP LOCAL:${color} ${addr enp2s0}
-${color grey}TAILSCALE:${color} ${addr tailscale0}
+${color grey}NETWORK (LAN):${color}
+Down: ${downspeed enp2s0}
+Up:   ${upspeed enp2s0}
+IP:   ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
+
+${color grey}FILE BROWSER:${color} \
+${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
+${color green}ONLINE${color}\
+${else}\
+${color red}OFFLINE${color}\
+${endif}
+
+${color grey}TAILSCALE:${color}
+IP:   ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
 ]];
 EOF
 
