@@ -69,7 +69,7 @@ It focuses on minimal resource usage while providing essential services such as 
 <li>Fallback to VNC (x11vnc) if unsupported on 32-bit systems</li>
 <br>
 <li>Full remote control of desktop environment</li>
-</ul>
+</ul><br>
 
 </td>
 </tr>
@@ -125,7 +125,7 @@ It focuses on minimal resource usage while providing essential services such as 
 <li>Disables desktop animations</li>
 <br>
 <li>Optimized for low CPU and RAM usage</li>
-</ul>
+</ul><br>
 
 </td>
 </tr>
@@ -179,7 +179,7 @@ It focuses on minimal resource usage while providing essential services such as 
 
 <li>Auto-start on login</li>
 <li>Lightweight and customizable</li>
-</ul>
+</ul><br>
 
 </td>
 </tr>
