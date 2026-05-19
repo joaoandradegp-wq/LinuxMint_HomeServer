@@ -140,8 +140,13 @@ conky.config = {
 };
 
 conky.text = [[
-${color grey}CPU:${color} ${cpu}% @ ${freq_g}GHz ${cpubar 8}
-${color grey}Temp:${color} ${execi 5 sensors | grep 'Core 0' | awk '{print $3}'}
+${alignr}${execi 3600 cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | sed 's/^ //'}
+
+${color grey}Cores:${color} ${execi 60 nproc}
+${color grey}Frequência:${color} ${freq_g}GHz 
+${color grey}Temperatura:${color} ${execi 5 sensors | grep 'Core 0' | awk '{print $3}'}
+${color grey}Uso:${color} ${cpu}% 
+${cpubar 8}
 
 ${color grey}RAM:${color}
 $mem / $memmax
@@ -156,9 +161,9 @@ ${fs_bar 8 /mnt/hd2}
 ${fs_used /mnt/hd2} / ${fs_size /mnt/hd2}
 
 ${color grey}NETWORK (LAN):${color}
+IP: ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
 Down: ${downspeed enp2s0}
-Up:   ${upspeed enp2s0}
-IP:   ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
+Up:     ${upspeed enp2s0}
 
 ${color grey}FILE BROWSER:${color} \
 ${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
@@ -168,7 +173,10 @@ ${color red}OFFLINE${color}\
 ${endif}
 
 ${color grey}TAILSCALE:${color}
-IP:   ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
+IP: ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
+
+${color grey}SYSTEM:${color}
+Tempo Ligado: ${uptime_short}
 ]];
 EOF
 
