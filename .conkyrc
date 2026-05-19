@@ -46,9 +46,9 @@ ${fs_bar 8 /mnt/hd2}
 ${fs_used /mnt/hd2} / ${fs_size /mnt/hd2}
 
 ${color grey}NETWORK (LAN):${color}
+IP: ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
 Down: ${downspeed enp2s0}
-Up:   ${upspeed enp2s0}
-IP:   ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
+Up:     ${upspeed enp2s0}
 
 ${color grey}FILE BROWSER:${color} \
 ${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
@@ -58,7 +58,7 @@ ${color red}OFFLINE${color}\
 ${endif}
 
 ${color grey}TAILSCALE:${color}
-IP:   ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
+IP: ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
 
 ${color grey}SYSTEM:${color}
 Tempo Ligado: ${uptime_short}
