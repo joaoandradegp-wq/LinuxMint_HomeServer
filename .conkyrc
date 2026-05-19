@@ -4,7 +4,7 @@ conky.config = {
     gap_y = 5,
 
     minimum_width = 300,
-    maximum_width = 300,
+    maximum_width = 400,
 
     background = false,
     update_interval = 1,
@@ -25,8 +25,13 @@ conky.config = {
 };
 
 conky.text = [[
-${color grey}CPU:${color} ${cpu}% @ ${freq_g}GHz ${cpubar 8}
-${color grey}Temp:${color} ${execi 5 sensors | grep 'Core 0' | awk '{print $3}'}
+${alignr}${execi 3600 cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | sed 's/^ //'}
+
+${color grey}Cores:${color} ${execi 60 nproc}
+${color grey}Frequência:${color} ${freq_g}GHz 
+${color grey}Temperatura:${color} ${execi 5 sensors | grep 'Core 0' | awk '{print $3}'}
+${color grey}Uso:${color} ${cpu}% 
+${cpubar 8}
 
 ${color grey}RAM:${color}
 $mem / $memmax
@@ -54,4 +59,7 @@ ${endif}
 
 ${color grey}TAILSCALE:${color}
 IP:   ${if_up tailscale0}${addr tailscale0}${else}Offline${endif}
+
+${color grey}SYSTEM:${color}
+Tempo Ligado: ${uptime_short}
 ]];
