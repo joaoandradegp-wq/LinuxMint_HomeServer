@@ -1,8 +1,8 @@
 <h1 align="center">🖥️ Lightweight Home Server</h1>
 
 <p align="center">
-Lightweight Home Server is a fully automated setup script designed to transform old or low-spec machines especially 32-bit systems into efficient, always-on home servers.
-It focuses on minimal resource usage while providing essential services such as file sharing, secure remote access, web-based file management, remote desktop access, and real-time system monitoring through a desktop HUD.
+Lightweight Home Server is an automated setup script that transforms old or low-spec machines (especially legacy 32-bit systems) into efficient always-on home servers.
+It focuses on minimal resource usage while providing file sharing, secure remote access, web-based file management, remote desktop support, and real-time system monitoring.
 </p>
 
 <p align="center">
@@ -15,222 +15,196 @@ It focuses on minimal resource usage while providing essential services such as 
 
 ## ✨ Features
 
-<table style="border: none; border-collapse: collapse;">
+<table>
 <tr>
-<td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 📁 FILE SERVER (SAMBA)
+<td width="50%" valign="top">
 
-<ul>
-<li>Automatic creation of shared directory:
-  <ul>
-    <li><code>/home/phobos/Server</code></li>
-  </ul>
-</li>
+### 📁 File Server (Samba)
 
-<li>Pre-configured Samba service:
-  <ul>
-    <li>Local network access</li>
-    <li>User authentication</li>
-    <li>Auto-start on boot</li>
-  </ul>
-</li>
+- Automatic shared directory creation:
 
-<li>Access from:
-  <ul>
-    <li>Windows</li>
-    <li>Linux</li>
-    <li>Mobile devices</li>
-  </ul>
-</li>
-</ul>
+```bash
+/home/phobos/Server
+```
+
+- Pre-configured Samba service
+  - Local network access
+  - User authentication
+  - Auto-start on boot
+
+- Compatible with:
+  - Windows
+  - Linux
+  - Mobile devices
+
+<br>
+</td>
+
+<td width="50%" valign="top">
+
+### 🌐 Remote Access (VPN)
+
+- Secure VPN access using Tailscale
+- No port forwarding required
+- Access your server remotely through a private network
+
+### 🖥️ Remote Desktop
+
+- Automatic AnyDesk installation
+- Automatic fallback to VNC (x11vnc) on unsupported systems
+- Full remote desktop control
 
 </td>
 
-<td width="50%" valign="top" style="border: none; padding: 15px;">
-
-### 🌐 REMOTE ACCESS (VPN)
-
-<ul>
-<li>Secure VPN setup using :contentReference[oaicite:0]{index=0}</li>
-<br>
-<li>No port forwarding required</li>
-<br>
-<li>Access your server from anywhere via private network</li>
-</ul>
-
-<br>
-
-### 🖥️ REMOTE DESKTOP
-
-<ul>
-<li>Automatic installation of :contentReference[oaicite:1]{index=1}</li>
-<br>
-<li>Fallback to VNC (x11vnc) if unsupported on 32-bit systems</li>
-<br>
-<li>Full remote control of desktop environment</li>
-</ul><br>
-
-</td>
 </tr>
 
 <tr>
-<td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 💻 WEB FILE MANAGER
+<td width="50%" valign="top">
 
-<ul>
-<li>File Browser installation and configuration</li>
-<br>
-<li>Runs as a system service (systemd)</li>
-<br>
-<li>Access via browser:
-  <ul>
-    <li><code>http://SERVER_IP:8080</code></li>
-  </ul>
-</li>
-<br>
-<li>Features:
-  <ul>
-    <li>Upload / Download</li>
-    <li>File management</li>
-    <li>Remote access via browser</li>
-  </ul>
-</li>
-</ul>
+### 💻 Web File Manager
+
+- Automatic File Browser installation
+- Runs as a systemd service
+
+Access through:
+
+```text
+http://SERVER_IP:8080
+```
+
+Features:
+
+- Upload / Download
+- File management
+- Browser-based remote access
 
 </td>
 
-<td width="50%" valign="top" style="border: none; padding: 15px;">
+<td width="50%" valign="top">
 
-### ⚡ SYSTEM OPTIMIZATION
+### ⚡ System Optimization
 
-<ul>
-<li>Removes unnecessary applications:
-  <ul>
-    <li>LibreOffice</li>
-    <li>Media tools</li>
-    <li>Desktop utilities</li>
-  </ul>
-</li>
+Removes unnecessary components:
 
-<li>Disables background services:
-  <ul>
-    <li>Bluetooth</li>
-    <li>Printing (CUPS)</li>
-    <li>Avahi</li>
-  </ul>
-</li>
+- LibreOffice
+- Media applications
+- Desktop utilities
 
-<li>Disables desktop animations</li>
+Disables unused services:
+
+- Bluetooth
+- CUPS (printing)
+- Avahi
+
+Additional optimizations:
+
+- Desktop animations disabled
+- Reduced CPU and RAM usage
+
 <br>
-<li>Optimized for low CPU and RAM usage</li>
-</ul><br>
-
 </td>
+
 </tr>
 
 <tr>
-<td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 💽 HARD DRIVE OPTIMIZATION
+<td width="50%" valign="top">
 
-<ul>
-<li>Automatic HDD spindown configuration</li>
-<br>
-<li>Triggers after 15 minutes of inactivity</li>
-<br>
-<li>Persistent across reboots</li>
-<br>
-<li>Ideal for mechanical drives</li>
-</ul>
+### 💽 Hard Drive Optimization
+
+- Automatic HDD spindown configuration
+- Activates after 15 minutes of inactivity
+- Persistent after reboot
+- Ideal for mechanical drives
 
 </td>
 
-<td width="50%" valign="top" style="border: none; padding: 15px;">
+<td width="50%" valign="top">
 
-### 🌡️ HARDWARE MONITORING
+### 📊 Monitoring & HUD
 
-<ul>
-<li>Automatic sensors detection</li>
-<br>
-<li>Temperature and hardware stats enabled</li>
-</ul>
+Hardware monitoring:
 
-<br>
+- Automatic sensor detection
+- Temperature monitoring enabled
 
-### 📊 DESKTOP HUD
+Desktop HUD (Conky):
 
-<ul>
-<li>Real-time overlay using :contentReference[oaicite:2]{index=2}</li>
-<br>
-<li>Displays:
-  <ul>
-    <li>CPU usage</li>
-    <li>Memory usage</li>
-    <li>Disk usage</li>
-    <li>Network speed (Download / Upload)</li>
-    <li>Local IP address</li>
-    <li>Tailscale IP</li>
-  </ul>
-</li>
+- CPU usage
+- Memory usage
+- Disk usage
+- Network throughput
+- Local IP address
+- Tailscale IP
+- Server uptime
+
+Features:
+
+- Auto-start on login
+- Lightweight
+- Customizable
 
 <br>
-
-<li>Auto-start on login</li>
-<li>Lightweight and customizable</li>
-</ul><br>
-
 </td>
+
 </tr>
+
 </table>
 
 ---
 
-## 🎯 Target Use Case
+## 🎯 Target Use Cases
 
-<ul>
-<li>Old desktops or laptops (Core 2 Duo, 32-bit systems)</li>
-<li>Home NAS (Network Attached Storage)</li>
-<li>Always-on file server</li>
-<li>Personal cloud with remote access</li>
-<li>Remote desktop access environment</li>
-<li>Lightweight monitoring dashboard</li>
-</ul>
+- Legacy desktops and laptops (Core 2 Duo / i686)
+- Home NAS
+- Always-on file server
+- Personal cloud storage
+- Remote desktop environment
+- Lightweight monitoring station
 
 ---
 
 ## 📌 Access Points
 
-<ul>
-<li><b>Samba (Local Network):</b><br>
-<code>smb://SERVER_IP/server</code></li>
-<br>
-<li><b>Web Interface:</b><br>
-<code>http://SERVER_IP:8080</code></li>
-<br>
-<li><b>Remote Access:</b><br>
-Via Tailscale network</li>
-<br>
-<li><b>Remote Desktop:</b><br>
-AnyDesk or VNC (fallback)</li>
-</ul>
+**Samba (LAN)**
+
+```text
+smb://SERVER_IP/server
+```
+
+**Web Interface**
+
+```text
+http://SERVER_IP:8080
+```
+
+**Remote Access**
+
+```text
+Tailscale Network
+```
+
+**Remote Desktop**
+
+```text
+AnyDesk / VNC
+```
 
 ---
 
 ## ⚠️ Notes
 
-<ul>
-<li>AnyDesk may not be fully supported on 32-bit systems</li>
-<li>Fallback to VNC is automatic if installation fails</li>
-<li>Samba user password is required during setup</li>
-<li>Network interface may need adjustment depending on hardware</li>
-<li>Designed for Linux Mint / Ubuntu-based systems</li>
-<li>Optimized specifically for legacy hardware (i686)</li>
-</ul>
+- AnyDesk may not support some 32-bit environments
+- VNC fallback is automatic
+- Samba password configuration is required during setup
+- Network interface names may vary by hardware
+- Designed for Linux Mint and Ubuntu-based distributions
+- Optimized for legacy hardware (i686)
 
 ---
 
 <p align="center">
-Made with ❤️ for lightweight server enthusiasts
+Made with ❤️ for lightweight server enthusiasts.
 </p>
