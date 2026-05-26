@@ -45,6 +45,7 @@ tree_share.column("path", width=500)
 
 tree_share.pack(fill="both", expand=True, padx=5, pady=5)
 
+
 def on_share_double_click(event):
 
     item = tree_share.identify_row(event.y)
@@ -52,6 +53,7 @@ def on_share_double_click(event):
     if item:
         tree_share.selection_set(item)
         edit_share(True)
+
 
 tree_share.bind("<Double-1>", on_share_double_click)
 
@@ -90,6 +92,7 @@ def on_conky_double_click(event):
         tree_conky.selection_set(item)
         edit_conky(True)
 
+
 tree_conky.bind("<Double-1>", on_conky_double_click)
 
 ########################################################
@@ -109,7 +112,6 @@ txt_fb.pack(pady=10)
 ########################################################
 
 SAMBA_USER = ""
-
 lbl_samba = tk.Label(frame_share, text="Force User: -")
 
 ########################################################
@@ -128,11 +130,7 @@ def load_samba_user():
 
     txt = path.read_text()
 
-    m = re.search(
-        r'force user\s*=\s*(.+)',
-        txt,
-        re.I
-    )
+    m = re.search(r'force user\s*=\s*(.+)',txt,re.I)
 
     SAMBA_USER = m.group(1).strip() if m else ""
 
@@ -203,7 +201,11 @@ def edit_share(edit=False):
     frame = tk.Frame(win, padx=20, pady=20)
     frame.pack(fill="both", expand=True)
 
-    tk.Label(frame,text="Configuração do Compartilhamento",font=("Arial", 12, "bold")).pack(pady=(0, 15))
+    tk.Label(
+        frame,
+        text="Configuração do Compartilhamento",
+        font=("Arial", 12, "bold")
+    ).pack(pady=(0, 15))
 
     row1 = tk.Frame(frame)
     row1.pack(fill="x", pady=5)
@@ -223,7 +225,11 @@ def edit_share(edit=False):
     e_path.pack(side="left", fill="x", expand=True)
     e_path.insert(0, caminho)
 
-    tk.Label(frame,text="A pasta será criada automaticamente caso não exista.",fg="gray").pack(pady=15)
+    tk.Label(
+        frame,
+        text="A pasta será criada automaticamente caso não exista.",
+        fg="gray"
+    ).pack(pady=15)
 
     bottom = tk.Frame(frame)
     bottom.pack(side="bottom", fill="x")
@@ -238,6 +244,7 @@ def edit_share(edit=False):
 
         subprocess.run(["sudo", "mkdir", "-p", caminho])
         subprocess.run(["sudo", "chmod", "755", caminho])
+
         subprocess.run(["sudo","chown",f"{SAMBA_USER}:{SAMBA_USER}",caminho])
 
         values = (nome, caminho)
@@ -284,7 +291,9 @@ min protocol = SMB2
 """
 
     for item in tree_share.get_children():
+
         nome, caminho = tree_share.item(item)["values"]
+
         txt += f"""
 
 [{nome}]
@@ -300,19 +309,9 @@ force user = {SAMBA_USER}
 
     Path("/tmp/smb.conf").write_text(txt)
 
-    subprocess.run([
-        "sudo",
-        "cp",
-        "/tmp/smb.conf",
-        "/etc/samba/smb.conf"
-    ])
+    subprocess.run(["sudo","cp","/tmp/smb.conf","/etc/samba/smb.conf"])
 
-    subprocess.run([
-        "sudo",
-        "systemctl",
-        "restart",
-        "smbd"
-    ])
+    subprocess.run(["sudo","systemctl","restart","smbd"])
 
     messagebox.showinfo("OK", "Samba atualizado")
 
@@ -359,7 +358,8 @@ def load_conky():
 
     for idx, nome, mount in pattern:
 
-        tree_conky.insert("","end", values=(int(idx), nome.strip(), mount.strip()))
+        tree_conky.insert("","end",values=(int(idx), nome.strip(), mount.strip()))
+
 
 def edit_conky(edit=False):
 
@@ -370,12 +370,14 @@ def edit_conky(edit=False):
     caminho = ""
 
     if edit:
+
         sel = tree_conky.selection()
 
         if not sel:
             return
 
         item = sel[0]
+
         idx, nome, caminho = tree_conky.item(item)["values"]
 
     else:
