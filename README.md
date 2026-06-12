@@ -236,5 +236,5 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 ---
 
 <p align="center">
-Made with ❤️ for lightweight server enthusiasts.
+Made for lightweight server enthusiasts. 🐧
 </p>
