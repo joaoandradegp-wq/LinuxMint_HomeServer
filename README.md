@@ -8,7 +8,8 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Stable-success">
   <img src="https://img.shields.io/badge/Platform-Linux%20Mint-blue">
-  <img src="https://img.shields.io/badge/Optimized-Home%20Server-green">
+  <img src="https://img.shields.io/badge/Optimized-Home%20Server-orange">
+  <img src="https://img.shields.io/badge/Language-EN%20-purple">
 </p>
 
 ---
