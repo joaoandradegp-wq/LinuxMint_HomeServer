@@ -236,6 +236,14 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 ---
 
+## 📸 Preview
+
+<p align="center">
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/02a98517-f720-42db-b8cb-2e637fb3e423" />
+</p>
+
+---
+
 <p align="center">
 Made for lightweight server enthusiasts. 🐧
 </p>
