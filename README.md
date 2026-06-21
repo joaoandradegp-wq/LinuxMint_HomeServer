@@ -2,14 +2,15 @@
 
 <p align="center">
 Lightweight Home Server is an automated setup script that transforms old or low-spec machines into efficient always-on home servers.
-It focuses on minimal resource usage while providing file sharing, secure remote access, web-based file management, remote desktop support, and real-time system monitoring.
+It focuses on minimal resource usage while providing file sharing, secure remote access, web-based file management, remote desktop support, real-time system monitoring, and a management GUI.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Stable-success">
-  <img src="https://img.shields.io/badge/Platform-Linux%20Mint-blue">
+  <img src="https://img.shields.io/badge/Platform-Linux%20Mint%2022.3%20XFCE-blue">
   <img src="https://img.shields.io/badge/Optimized-Home%20Server-orange">
   <img src="https://img.shields.io/badge/Language-EN%20-purple">
+  <img src="https://img.shields.io/badge/Python-Tkinter%20GUI-green">
 </p>
 
 ---
@@ -22,10 +23,11 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <h3>📁 File Server (Samba)</h3>
 
 <ul>
+<li>Dynamic user detection (SUDO_USER / current user)</li>
 <li>Automatic shared directory creation</li>
 </ul>
 
-<pre><code>/home/phobos/Server</code></pre>
+<pre><code>~/Server</code></pre>
 
 <ul>
 <li>Pre-configured Samba service</li>
@@ -59,7 +61,7 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 <ul>
 <li>Automatic AnyDesk installation</li>
-<li>Fallback to VNC (x11vnc) on unsupported systems</li>
+<li>Fallback to x11vnc if unavailable</li>
 <li>Full remote desktop control</li>
 </ul>
 
@@ -70,7 +72,7 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <h3>💻 Web File Manager</h3>
 
 <ul>
-<li>Automatic File Browser installation</li>
+<li>Automatic FileBrowser installation</li>
 <li>Runs as a systemd service</li>
 </ul>
 
@@ -99,29 +101,29 @@ It focuses on minimal resource usage while providing file sharing, secure remote
   <ul>
     <li>LibreOffice</li>
     <li>Thunderbird</li>
-    <li>Media tools</li>
-    <li>Games and utilities</li>
+    <li>Hexchat / media tools</li>
+    <li>Games & utilities</li>
   </ul>
 </li>
 
 <li>Disabled services:
   <ul>
     <li>Bluetooth</li>
-    <li>CUPS (printing)</li>
+    <li>CUPS</li>
     <li>Avahi daemon</li>
   </ul>
 </li>
 
 <li>Desktop optimizations:
   <ul>
-    <li>Animations disabled</li>
-    <li>Reduced visual effects</li>
+    <li>Animations disabled (XFCE / Cinnamon safe)</li>
   </ul>
 </li>
 
 <li>Memory tuning:
   <ul>
     <li>Swappiness set to 10</li>
+    <li>ZRAM enabled (modern kernel support)</li>
   </ul>
 </li>
 </ul>
@@ -134,8 +136,8 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 <ul>
 <li>CPU governor set to <code>schedutil</code></li>
-<li>HDD I/O scheduler set to <code>deadline</code></li>
-<li>Persistent configuration via systemd and udev rules</li>
+<li>HDD I/O scheduler set to <code>mq-deadline</code></li>
+<li>Persistent configuration via systemd + udev rules</li>
 <li>Filesystem optimizations:
   <ul>
     <li>noatime</li>
@@ -155,10 +157,10 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <h3>💽 Storage & RAM Optimization</h3>
 
 <ul>
-<li>HDD spindown enabled (15 minutes idle)</li>
+<li>HDD spindown enabled (180 seconds idle)</li>
 <li>Journald limited to RAM usage</li>
 <li>Automatic log vacuum cleanup</li>
-<li>ZRAM enabled for memory compression</li>
+<li>ZRAM compression enabled</li>
 </ul>
 
 </td>
@@ -170,21 +172,76 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <ul>
 <li>CPU usage and frequency</li>
 <li>RAM and swap usage</li>
-<li>Disk usage (system and data drive)</li>
+<li>Disk usage (system + data)</li>
 <li>Network IP address</li>
-<li>CPU governor status</li>
-<li>Disk scheduler status</li>
-<li>ZRAM usage</li>
-<li>FileBrowser status (online/offline)</li>
+<li>FileBrowser status</li>
 <li>Tailscale IP</li>
 <li>System uptime</li>
 </ul>
 
-<p>Auto-starts on login with a lightweight overlay HUD.</p>
+<p>Auto-starts as lightweight desktop overlay.</p>
 <br>
 </td>
 
 </tr>
+
+<tr>
+
+<td width="50%" valign="top">
+
+<h3>🐍 Python GUI Manager (NEW)</h3>
+
+<ul>
+<li>Tkinter-based control panel</li>
+<li>Tabbed interface:
+  <ul>
+    <li>📁 Samba shares manager</li>
+    <li>📊 Conky disk editor</li>
+    <li>🌐 FileBrowser configuration</li>
+  </ul>
+</li>
+
+<li>Live Samba config editor:
+  <ul>
+    <li>Add / edit / remove shares</li>
+    <li>Change force-user dynamically</li>
+    <li>Auto-restart Samba service</li>
+  </ul>
+</li>
+
+<li>Conky live editor:
+  <ul>
+    <li>Add/remove mounted disks</li>
+    <li>Auto-restart Conky</li>
+  </ul>
+</li>
+
+<li>FileBrowser viewer:
+  <ul>
+    <li>Reads root path from systemd service</li>
+  </ul>
+</li>
+<br>
+</ul>
+
+</td>
+
+<td width="50%" valign="top">
+
+<h3>🧠 Smart Installer Improvements</h3>
+
+<ul>
+<li>Auto-detects real user (SUDO_USER support)</li>
+<li>No hardcoded usernames anymore</li>
+<li>Works on fresh Mint 22.3 XFCE installs</li>
+<li>Python + Tkinter installed automatically</li>
+<li>Safer Samba + FileBrowser setup</li>
+</ul>
+
+</td>
+
+</tr>
+
 </table>
 
 ---
@@ -193,12 +250,11 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 <ul>
 <li>Old laptops and desktops</li>
-<li>Legacy 32-bit systems (i686)</li>
-<li>Home NAS</li>
-<li>Personal file server</li>
+<li>Home NAS / file server</li>
 <li>Lightweight cloud storage</li>
 <li>Remote access node</li>
-<li>Always-on monitoring machine</li>
+<li>Monitoring server</li>
+<li>Low-power always-on machine</li>
 </ul>
 
 ---
@@ -206,32 +262,30 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <h2>📌 Access Points</h2>
 
 <p><b>Samba (LAN)</b></p>
-
 <pre><code>smb://SERVER_IP/server</code></pre>
 
-<p><b>File Browser (Web UI)</b></p>
-
+<p><b>FileBrowser (Web UI)</b></p>
 <pre><code>http://SERVER_IP:8080</code></pre>
 
-<p><b>Remote Access</b></p>
-
-<pre><code>Tailscale private network</code></pre>
+<p><b>Tailscale</b></p>
+<pre><code>Private network access</code></pre>
 
 <p><b>Remote Desktop</b></p>
+<pre><code>AnyDesk / x11vnc</code></pre>
 
-<pre><code>AnyDesk / VNC</code></pre>
+<p><b>GUI Manager</b></p>
+<pre><code>python3 server_manager.py</code></pre>
 
 ---
 
 <h2>⚠️ Notes</h2>
 
 <ul>
-<li>AnyDesk compatibility may vary on legacy systems</li>
-<li>Samba password setup is required during installation</li>
+<li>Designed for Linux Mint 22.3 XFCE (64-bit)</li>
+<li>Legacy 32-bit support removed in this version</li>
+<li>Some services may vary depending on hardware</li>
 <li>Network interface names may vary (enp*, eth*, wlan*)</li>
-<li>Designed for Ubuntu and Linux Mint</li>
-<li>Optimized for low-resource environments</li>
-<li>ZRAM is enabled automatically for memory pressure reduction</li>
+<li>Requires sudo privileges for setup</li>
 </ul>
 
 ---
@@ -239,7 +293,7 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 ## 📸 Preview
 
 <p align="center">
-  <img width="500" alt="image" src="https://github.com/user-attachments/assets/02a98517-f720-42db-b8cb-2e637fb3e423" />
+  <img width="500" src="https://github.com/user-attachments/assets/02a98517-f720-42db-b8cb-2e637fb3e423" />
 </p>
 
 ---
