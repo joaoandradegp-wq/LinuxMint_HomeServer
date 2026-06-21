@@ -274,7 +274,7 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 <pre><code>AnyDesk / x11vnc</code></pre>
 
 <p><b>GUI Manager</b></p>
-<pre><code>python3 server_manager.py</code></pre>
+<pre><code>python3 Python_AdminPanel.py</code></pre>
 
 ---
 
