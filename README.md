@@ -290,10 +290,17 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 ---
 
-## 📸 Preview
+## 📸 Linux Mint Preview
 
 <p align="center">
   <img width="400" alt="image" src="https://github.com/user-attachments/assets/4e34e851-a75d-4760-a6cd-0bd5a24023e1" /><br>
+</p>
+
+---
+
+## 📸 Admin Panel Preview
+
+<p align="center">
   <img width="350" src="https://github.com/user-attachments/assets/02a98517-f720-42db-b8cb-2e637fb3e423" />
 </p>
 
