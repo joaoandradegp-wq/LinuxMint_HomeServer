@@ -15,6 +15,21 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 ---
 
+## ⬇️ Releases
+
+Choose the installer that matches your Linux Mint version and system architecture.
+
+| Version | Architecture | Download |
+|----------|-------------|----------|
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.0/Install_HomeServer-x64.sh"><b>Click here</b></a> |
+| Linux Mint 19 XFCE | **32-bit (x86)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/1.0/Install_HomeServer-x86.sh"><b>Click here</b></a> |
+
+> **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
+> The **32-bit** version is provided for legacy hardware running Linux Mint 19.
+
+---
+
+## ✨ Features
 <table>
 <tr>
 
@@ -189,7 +204,7 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 <td width="50%" valign="top">
 
-<h3>🐍 Python GUI Manager (NEW)</h3>
+<h3>🐍 Python GUI Manager</h3>
 
 <ul>
 <li>Tkinter-based control panel</li>
