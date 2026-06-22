@@ -29,7 +29,7 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 ---
 
-## ✨ Features
+## ✨ Script details
 <table>
 <tr>
 
