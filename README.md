@@ -27,6 +27,10 @@ Choose the installer that matches your Linux Mint version and system architectur
 > **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
 > The **32-bit** version is provided for legacy hardware running Linux Mint 19.
 
+| Version | Architecture | Download |
+|----------|-------------|----------|
+| Admin Panel 1.0 | **Python** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_AdminPanel.py"><b>Click here</b></a> |
+
 ---
 
 ## ⚡ Install directly from GitHub
