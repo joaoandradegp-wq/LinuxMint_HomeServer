@@ -480,31 +480,31 @@ chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_AdminPanel.py"
 cat > "$DESKTOP_DIR/Server.desktop" << EOF
 [Desktop Entry]
 Version=1.0
-Type=Application
+Type=Link
 Name=Server
-Exec=thunar "$USER_HOME/Server"
-Icon=folder-publicshare
-Terminal=false
+Comment=
+Icon=web-icq
+URL=file://$USER_HOME/Server/
 EOF
 
 cat > "$DESKTOP_DIR/Conky.desktop" << EOF
 [Desktop Entry]
 Version=1.0
-Type=Application
+Type=Link
 Name=Conky Configuration
-Exec=xdg-open "$USER_HOME/.conkyrc"
+Comment=
 Icon=utilities-system-monitor
-Terminal=false
+URL=file://$USER_HOME/.conkyrc
 EOF
 
 cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
 [Desktop Entry]
 Version=1.0
-Type=Application
+Type=Link
 Name=Server Panel
-Exec=python3 "$USER_HOME/Python_AdminPanel.py"
+Comment=
 Icon=preferences-system
-Terminal=false
+URL=file://$USER_HOME/Python_AdminPanel.py
 EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
