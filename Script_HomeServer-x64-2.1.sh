@@ -198,7 +198,7 @@ cp /etc/samba/smb.conf /etc/samba/smb.conf.bak 2>/dev/null || true
 sudo bash -c "cat > /etc/samba/smb.conf << EOF
 [global]
 workgroup = WORKGROUP
-server string = K7 Server
+server string = Linux Home Server
 security = user
 map to guest = bad user
 min protocol = SMB2
