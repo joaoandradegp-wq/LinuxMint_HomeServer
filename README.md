@@ -21,7 +21,7 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 | Version | Architecture | Download |
 |----------|-------------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.1/Install_HomeServer-x64_2.1.sh"><b>Click here</b></a> |
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.1/Install_HomeServer-x64-2.1.sh"><b>Click here</b></a> |
 | Linux Mint 19.x XFCE | **32-bit (x86)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/1.0/Install_HomeServer-x86.sh"><b>Click here</b></a> |
 
 > **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
