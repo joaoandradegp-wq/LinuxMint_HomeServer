@@ -471,11 +471,11 @@ if [ -z "$DESKTOP_DIR" ]; then
     DESKTOP_DIR="$USER_HOME/Desktop"
 fi
 
-wget -q -O "$USER_HOME/Python_AdminPanel.py" \
-https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_AdminPanel.py
+wget -q -O "$USER_HOME/Python_ServerPanel.py" \
+https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_ServerPanel.py
 
-chmod +x "$USER_HOME/Python_AdminPanel.py"
-chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_AdminPanel.py"
+chmod +x "$USER_HOME/Python_ServerPanel.py"
+chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_ServerPanel.py"
 
 cat > "$DESKTOP_DIR/Server.desktop" << EOF
 [Desktop Entry]
@@ -504,7 +504,7 @@ Type=Link
 Name=Server Panel
 Comment=
 Icon=preferences-system
-URL=file://$USER_HOME/Python_AdminPanel.py
+URL=file://$USER_HOME/Python_ServerPanel.py
 EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
