@@ -464,6 +464,52 @@ EOF
 
 chown -R "$CURRENT_USER":"$CURRENT_USER" "$USER_HOME/.config"
 
+echo "=== INSTALLING DESKTOP SHORTCUTS ==="
+
+DESKTOP_DIR=$(sudo -u "$CURRENT_USER" xdg-user-dir DESKTOP 2>/dev/null)
+if [ -z "$DESKTOP_DIR" ]; then
+    DESKTOP_DIR="$USER_HOME/Desktop"
+fi
+
+wget -q -O "$USER_HOME/Python_AdminPanel.py" \
+https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_AdminPanel.py
+
+chmod +x "$USER_HOME/Python_AdminPanel.py"
+chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_AdminPanel.py"
+
+cat > "$DESKTOP_DIR/Server.desktop" << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Server
+Exec=thunar "$USER_HOME/Server"
+Icon=folder-publicshare
+Terminal=false
+EOF
+
+cat > "$DESKTOP_DIR/Conky.desktop" << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Conky Configuration
+Exec=xdg-open "$USER_HOME/.conkyrc"
+Icon=utilities-system-monitor
+Terminal=false
+EOF
+
+cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Server Panel
+Exec=python3 "$USER_HOME/Python_AdminPanel.py"
+Icon=preferences-system
+Terminal=false
+EOF
+
+chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
+chown "$CURRENT_USER:$CURRENT_USER" "$DESKTOP_DIR"/*.desktop 2>/dev/null
+
 # ══════════════════════════════════════════════════════════════════════════════
 echo ""
 echo "===== VALIDATION ====="
