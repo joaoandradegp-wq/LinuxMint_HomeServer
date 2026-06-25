@@ -29,6 +29,20 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 ---
 
+## ⚡ Install directly from GitHub (no download required)
+
+### 🟢 Linux Mint 22.3 (64-bit)
+```bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Install_HomeServer-x64.sh | sudo bash
+```
+
+### 🟡 Linux Mint 19 (32-bit)
+```bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Install_HomeServer-x86.sh | sudo bash
+```
+
+---
+
 ## ✨ Script details
 <table>
 <tr>
