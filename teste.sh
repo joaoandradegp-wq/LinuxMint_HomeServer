@@ -9,60 +9,35 @@ fi
 
 USER_HOME="$(eval echo ~"$CURRENT_USER")"
 
-echo "User : $CURRENT_USER"
-echo "Home : $USER_HOME"
+# Descobre a área de trabalho real do XFCE (PT/EN safe)
+DESKTOP_DIR=$(sudo -u "$CURRENT_USER" xdg-user-dir DESKTOP 2>/dev/null)
+
+# fallback caso xdg-user-dir não exista
+if [ -z "$DESKTOP_DIR" ] || [ ! -d "$DESKTOP_DIR" ]; then
+    DESKTOP_DIR="$USER_HOME/Desktop"
+fi
+
+echo "User       : $CURRENT_USER"
+echo "Home       : $USER_HOME"
+echo "Desktop Dir: $DESKTOP_DIR"
 
 # =====================================================
 echo "=== SHOWING DESKTOP ICONS ==="
 # =====================================================
 
-xfconf-query -c xfce4-desktop \
+sudo -u "$CURRENT_USER" xfconf-query -c xfce4-desktop \
 -p /desktop-icons/file-icons/show-home \
 -s true 2>/dev/null
 
-xfconf-query -c xfce4-desktop \
+sudo -u "$CURRENT_USER" xfconf-query -c xfce4-desktop \
 -p /desktop-icons/file-icons/show-trash \
 -s true 2>/dev/null
-
-# =====================================================
-echo "=== REMOVING FIREFOX FROM PANEL ==="
-# =====================================================
-
-for launcher in $(xfconf-query -c xfce4-panel -p /plugins -lv 2>/dev/null | awk '{print $1}'); do
-
-    if xfconf-query -c xfce4-panel -p "$launcher/items" >/dev/null 2>&1; then
-
-        items=$(xfconf-query -c xfce4-panel -p "$launcher/items")
-
-        for item in $items; do
-
-            desktop_file=$(xfconf-query \
-                -c xfce4-panel \
-                -p "/plugins/plugin-$item/item-files" \
-                2>/dev/null)
-
-            if echo "$desktop_file" | grep -qi firefox; then
-
-                echo "Removing Firefox launcher..."
-
-                xfconf-query \
-                    -c xfce4-panel \
-                    -p "/plugins/plugin-$item" \
-                    -r -R 2>/dev/null
-
-            fi
-        done
-    fi
-done
-
-xfce4-panel -r >/dev/null 2>&1 &
 
 # =====================================================
 echo "=== DOWNLOADING SERVER PANEL ==="
 # =====================================================
 
-wget -q \
--O "$USER_HOME/Python_AdminPanel.py" \
+wget -q -O "$USER_HOME/Python_AdminPanel.py" \
 https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_AdminPanel.py
 
 chmod +x "$USER_HOME/Python_AdminPanel.py"
@@ -72,9 +47,7 @@ chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_AdminPanel.py"
 echo "=== CREATING SERVER SHORTCUT ==="
 # =====================================================
 
-mkdir -p "$USER_HOME/Desktop"
-
-cat > "$USER_HOME/Desktop/Server.desktop" << EOF
+cat > "$DESKTOP_DIR/Server.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -88,7 +61,7 @@ EOF
 echo "=== CREATING CONKY SHORTCUT ==="
 # =====================================================
 
-cat > "$USER_HOME/Desktop/Conky.desktop" << EOF
+cat > "$DESKTOP_DIR/Conky.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -102,7 +75,7 @@ EOF
 echo "=== CREATING SERVER PANEL SHORTCUT ==="
 # =====================================================
 
-cat > "$USER_HOME/Desktop/ServerPanel.desktop" << EOF
+cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -112,10 +85,16 @@ Icon=preferences-system
 Terminal=false
 EOF
 
-chmod +x "$USER_HOME/Desktop/"*.desktop
-chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Desktop/"*.desktop
+# =====================================================
+echo "=== FIX PERMISSIONS ==="
+# =====================================================
 
-echo ""
+chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
+chown "$CURRENT_USER:$CURRENT_USER" "$DESKTOP_DIR"/*.desktop 2>/dev/null
+
+chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Python_AdminPanel.py"
+
+# =====================================================
 echo "=========================================="
-echo "Desktop configuration completed."
+echo " Desktop configuration completed successfully"
 echo "=========================================="
