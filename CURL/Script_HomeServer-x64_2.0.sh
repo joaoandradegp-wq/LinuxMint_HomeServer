@@ -91,8 +91,6 @@ sudo bash -c 'cat > /etc/systemd/journald.conf.d/ram.conf << EOF
 [Journal]
 Storage=volatile
 RuntimeMaxUse=50M
-RuntimeKeepFree=30M
-MaxRetentionSec=1day
 EOF'
 
 sudo systemctl restart systemd-journald
