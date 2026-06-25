@@ -552,13 +552,13 @@ echo ""
 HOSTNAME_LOCAL=$(hostname)
 TAILSCALE_IP=$(tailscale ip -4)
 
-echo "═══════════════════════════════════════"
+echo "═════════════════════════════════════════════"
 echo "  SETUP COMPLETED — v2.1"
-echo "═══════════════════════════════════════"
+echo "═════════════════════════════════════════════"
 echo ""
 echo "  Samba:       smb://$HOSTNAME_LOCAL/server"
 echo "  FileBrowser: http://$TAILSCALE_IP:8080"
 echo "  Tailscale IP: $TAILSCALE_IP"
 echo ""
 echo "  Recommended: reboot the system now."
-echo "═══════════════════════════════════════"
+echo "═════════════════════════════════════════════"
