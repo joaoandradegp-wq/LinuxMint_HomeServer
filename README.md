@@ -19,10 +19,10 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 Choose the installer that matches your Linux Mint version and system architecture.
 
-| Version | Architecture | Download |
-|----------|-------------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.1/Install_HomeServer-x64_2.1.sh"><b>Click here</b></a> |
-| Linux Mint 19.x XFCE | **32-bit (x86)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/1.0/Install_HomeServer-x86.sh"><b>Click here</b></a> |
+| Version | Architecture | Release Date | Download |
+|----------|-------------|--------------|----------|
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | 2026-06-25 | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.1/Install_HomeServer-x64-2.1.sh"><b>Click here</b></a> |
+| Linux Mint 19.x XFCE | **32-bit (x86)** | 2026-04-26 | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/1.0/Install_HomeServer-x86.sh"><b>Click here</b></a> |
 
 > **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
 > The **32-bit** version is provided for legacy hardware running Linux Mint 19.
