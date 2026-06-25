@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 
 ### 🟡 Linux Mint 19 (32-bit)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/CURL/Script_HomeServer-x86-1.0.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh | sudo bash
 ```
 
 ---
