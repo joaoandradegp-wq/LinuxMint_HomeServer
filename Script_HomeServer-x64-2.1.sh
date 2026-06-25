@@ -2,7 +2,9 @@
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  HOME SERVER SETUP — Linux Mint 22.3 (Noble/Ubuntu 24.04 base) — v2.1
+#  Created by João Andrade aka Phobos
 #  Tested on: Linux Mint 22.3 XFCE x64
+#  GitHub: https://github.com/joaoandradegp-wq/LinuxMint_HomeServer
 #  Note: Run as root or with sudo. The real user is detected automatically.
 # ══════════════════════════════════════════════════════════════════════════════
 
