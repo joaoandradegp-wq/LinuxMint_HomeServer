@@ -31,6 +31,9 @@ Choose the installer that matches your Linux Mint version and system architectur
 |----------|-------------|----------|
 | Admin Panel 1.0 | **Python** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_AdminPanel.py"><b>Click here</b></a> |
 
+> **Recommended:** Use the **Python GUI Manager (Tkinter)** on Linux Mint 22.3 XFCE or newer for full visual management of Samba shares, Conky monitoring configuration, and FileBrowser settings.  
+> The tool is included as part of the modern (64-bit) Home Server installer and provides a graphical alternative to manual configuration files.
+
 ---
 
 ## ⚡ Install directly from GitHub
