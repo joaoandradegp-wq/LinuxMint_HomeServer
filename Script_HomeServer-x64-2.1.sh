@@ -263,8 +263,6 @@ sudo tailscale up --accept-dns=false
 echo ""
 echo "Tailscale authentication completed."
 echo ""
-echo "Your Tailscale IP:"
-tailscale ip -4
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== REMOVING FIREFOX ==="
@@ -550,12 +548,17 @@ echo "--- Memory ---"
 free -h
 
 echo ""
+
+HOSTNAME_LOCAL=$(hostname)
+TAILSCALE_IP=$(tailscale ip -4)
+
 echo "═══════════════════════════════════════"
 echo "  SETUP COMPLETED — v2.1"
 echo "═══════════════════════════════════════"
 echo ""
-echo "  Samba:       smb://SERVER_IP/server"
-echo "  FileBrowser: http://SERVER_IP:8080"
+echo "  Samba:       smb://$HOSTNAME_LOCAL/server"
+echo "  FileBrowser: http://$TAILSCALE_IP:8080"
+echo "  Tailscale IP: $TAILSCALE_IP"
 echo ""
 echo "  Recommended: reboot the system now."
 echo "═══════════════════════════════════════"
