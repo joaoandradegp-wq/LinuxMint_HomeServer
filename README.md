@@ -21,8 +21,8 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 | Version | Architecture | Download |
 |----------|-------------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/2.0/Install_HomeServer-x64.sh"><b>Click here</b></a> |
-| Linux Mint 19 XFCE | **32-bit (x86)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/download/1.0/Install_HomeServer-x86.sh"><b>Click here</b></a> |
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/tag/2.1"><b>Click here</b></a> |
+| Linux Mint 19.x XFCE | **32-bit (x86)** | <a href="https://github.com/joaoandradegp-wq/LinuxMint_HomeServer/releases/tag/1.0"><b>Click here</b></a> |
 
 > **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
 > The **32-bit** version is provided for legacy hardware running Linux Mint 19.
@@ -33,12 +33,12 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 ### 🟢 Linux Mint 22.3 (64-bit)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Install_HomeServer-x64.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Script_HomeServer-x64_2.1.sh | sudo bash
 ```
 
 ### 🟡 Linux Mint 19 (32-bit)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Install_HomeServer-x86.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/CURL/Script_HomeServer-x86 | sudo bash
 ```
 
 ---
