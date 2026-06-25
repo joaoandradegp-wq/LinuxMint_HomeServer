@@ -33,12 +33,12 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 ### 🟢 Linux Mint 22.3 (64-bit)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/Script_HomeServer-x64_2.1.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.1.sh | sudo bash
 ```
 
 ### 🟡 Linux Mint 19 (32-bit)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/main/CURL/Script_HomeServer-x86 | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/CURL/Script_HomeServer-x86.sh | sudo bash
 ```
 
 ---
