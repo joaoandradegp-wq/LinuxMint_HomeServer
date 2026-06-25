@@ -25,15 +25,20 @@ echo "Desktop Dir: $DESKTOP_DIR"
 echo "=== SHOWING DESKTOP ICONS (HOME + TRASH) ==="
 # =====================================================
 
+# ativa modo de ícones no desktop
+sudo -u "$CURRENT_USER" xfconf-query -c xfce4-desktop \
+-p /desktop-icons/style \
+-s 0 2>/dev/null
+
+# garante visibilidade do HOME
 sudo -u "$CURRENT_USER" xfconf-query -c xfce4-desktop \
 -p /desktop-icons/file-icons/show-home \
 -s true 2>/dev/null
 
+# garante visibilidade do TRASH
 sudo -u "$CURRENT_USER" xfconf-query -c xfce4-desktop \
 -p /desktop-icons/file-icons/show-trash \
 -s true 2>/dev/null
-
-sudo -u "$CURRENT_USER" xfdesktop --reload 2>/dev/null || true
 
 # =====================================================
 echo "=== DOWNLOADING SERVER PANEL ==="
