@@ -238,14 +238,31 @@ echo "=== INSTALLING TAILSCALE ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
 curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up --accept-dns=false 2>/dev/null || true
+
+if ! command -v tailscale >/dev/null 2>&1; then
+    echo "Tailscale installation failed."
+    exit 1
+fi
 
 echo ""
-echo "==========================================="
-echo "Authenticate Tailscale in the browser."
-echo "When done, press ENTER to continue..."
-echo "==========================================="
-read
+echo "============================================================"
+echo "TAILSCALE SETUP"
+echo "============================================================"
+echo ""
+echo "The next command will display a login URL."
+echo "Open the URL in your browser and authorize this server."
+echo ""
+echo "After authentication completes, return to this terminal."
+echo ""
+read -p "Press ENTER to continue..."
+
+sudo tailscale up --accept-dns=false
+
+echo ""
+echo "Tailscale authentication completed."
+echo ""
+echo "Your Tailscale IP:"
+tailscale ip -4
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== REMOVING FIREFOX ==="
