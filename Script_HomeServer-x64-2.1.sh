@@ -18,6 +18,11 @@ USER_HOME="$(eval echo ~"$CURRENT_USER")"
 
 echo "=== User detected: $CURRENT_USER (home: $USER_HOME) ==="
 
+# ── Log de execução ───────────────────────────────────────────────────────────
+LOG_FILE="$USER_HOME/homeserver-setup-$(date +%Y%m%d_%H%M%S).log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "=== Log iniciado: $LOG_FILE ==="
+
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== UPDATING SYSTEM ==="
 # ══════════════════════════════════════════════════════════════════════════════
@@ -217,23 +222,25 @@ EOF"
 echo "=== SETTING SAMBA AND FILEBROWSER PASSWORD ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+RESET="\033[0m"
+
 while true; do
-    read -s -p "Enter the password for Samba and FileBrowser (minimum 12 characters): " SMB_PASS < /dev/tty
+    echo -e "${GREEN}Enter the password for Samba and FileBrowser (minimum 12 characters): ${RESET}"
+    read -s SMB_PASS < /dev/tty
     echo
-
-    read -s -p "Confirm password: " SMB_PASS2 < /dev/tty
+    echo -e "${GREEN}Confirm password: ${RESET}"
+    read -s SMB_PASS2 < /dev/tty
     echo
-
     if [ ${#SMB_PASS} -lt 12 ]; then
-        echo "Password must contain at least 12 characters."
+        echo -e "${RED}Password must contain at least 12 characters.${RESET}"
         continue
     fi
-
     if [ "$SMB_PASS" != "$SMB_PASS2" ]; then
-        echo "Passwords do not match."
+        echo -e "${RED}Passwords do not match.${RESET}"
         continue
     fi
-
     break
 done
 
