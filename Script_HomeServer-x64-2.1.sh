@@ -481,10 +481,10 @@ cat > "$DESKTOP_DIR/Server.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Link
-Name=Server
+Name=Server Folder
 Comment=
 Icon=web-icq
-URL=file://$USER_HOME/Server/
+URL=$USER_HOME/Server/
 EOF
 
 cat > "$DESKTOP_DIR/Conky.desktop" << EOF
@@ -494,7 +494,7 @@ Type=Link
 Name=Conky Configuration
 Comment=
 Icon=utilities-system-monitor
-URL=file://$USER_HOME/.conkyrc
+URL=$USER_HOME/.conkyrc
 EOF
 
 cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
@@ -504,7 +504,7 @@ Type=Link
 Name=Server Panel
 Comment=
 Icon=preferences-system
-URL=file://$USER_HOME/Python_ServerPanel.py
+URL=$USER_HOME/Python_ServerPanel.py
 EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
@@ -558,7 +558,7 @@ echo "════════════════════════�
 echo ""
 echo "  Samba:       smb://$HOSTNAME_LOCAL/server"
 echo "  FileBrowser: http://$TAILSCALE_IP:8080"
-echo "  Tailscale IP: $TAILSCALE_IP"
+echo "  Tailscale IP:$TAILSCALE_IP"
 echo ""
 echo "  Recommended: reboot the system now."
 echo "═════════════════════════════════════════════"
