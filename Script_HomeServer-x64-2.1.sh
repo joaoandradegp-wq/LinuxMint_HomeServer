@@ -214,11 +214,27 @@ valid users = $CURRENT_USER
 EOF"
 
 # ══════════════════════════════════════════════════════════════════════════════
-echo "=== SETTING SAMBA PASSWORD ==="
+echo "=== SETTING SAMBA AND FILEBROWSER PASSWORD ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-read -s -p "Enter the Linux/Samba user password: " SMB_PASS
-echo
+while true; do
+    read -s -p "Enter the password for Samba and FileBrowser: " SMB_PASS
+    echo
+    read -s -p "Confirm password: " SMB_PASS2
+    echo
+
+    if [ -z "$SMB_PASS" ]; then
+        echo "Password cannot be empty."
+        continue
+    fi
+
+    if [ "$SMB_PASS" != "$SMB_PASS2" ]; then
+        echo "Passwords do not match."
+        continue
+    fi
+
+    break
+done
 
 sudo smbpasswd -x "$CURRENT_USER" 2>/dev/null || true
 printf "%s\n%s\n" "$SMB_PASS" "$SMB_PASS" | sudo smbpasswd -a "$CURRENT_USER"
