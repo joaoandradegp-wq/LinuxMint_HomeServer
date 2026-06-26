@@ -218,9 +218,9 @@ echo "=== SETTING SAMBA AND FILEBROWSER PASSWORD ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
 while true; do
-    read -s -p "Enter the password for Samba and FileBrowser: " SMB_PASS
+    read -s -p "Enter the password for Samba and FileBrowser: " SMB_PASS < /dev/tty
     echo
-    read -s -p "Confirm password: " SMB_PASS2
+    read -s -p "Confirm password: " SMB_PASS2 < /dev/tty
     echo
 
     if [ -z "$SMB_PASS" ]; then
@@ -272,7 +272,7 @@ echo "Open the URL in your browser and authorize this server."
 echo ""
 echo "After authentication completes, return to this terminal."
 echo ""
-read -p "Press ENTER to continue..."
+read -p "Press ENTER to continue..." < /dev/tty
 
 sudo tailscale up --accept-dns=false
 
