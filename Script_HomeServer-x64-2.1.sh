@@ -293,7 +293,7 @@ command -v filebrowser >/dev/null 2>&1 || {
     exit 1
 }
 
-touch "$USER_HOME/filebrowser.db"
+filebrowser -d "$USER_HOME/filebrowser.db" config init || true
 chown "$CURRENT_USER":"$CURRENT_USER" "$USER_HOME/filebrowser.db"
 chmod 600 "$USER_HOME/filebrowser.db"
 
@@ -301,10 +301,14 @@ chmod 600 "$USER_HOME/filebrowser.db"
 echo "=== CONFIGURING FILEBROWSER USER ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-filebrowser users add "$CURRENT_USER" "$FB_PASS" "$USER_HOME/Server" \
-    -d "$USER_HOME/filebrowser.db" \
-    --perm.admin \
-    || filebrowser users update "$CURRENT_USER" "$FB_PASS" -d "$USER_HOME/filebrowser.db"
+echo "=== CONFIGURING FILEBROWSER USER ==="
+
+filebrowser -d "$USER_HOME/filebrowser.db" users add "$CURRENT_USER" "$FB_PASS" \
+    || echo "User already exists, updating..."
+
+filebrowser -d "$USER_HOME/filebrowser.db" users update "$CURRENT_USER" \
+    --scope "$USER_HOME/Server" \
+    --perm.admin true
 
 sudo bash -c "cat > /etc/systemd/system/filebrowser.service << EOF
 [Unit]
