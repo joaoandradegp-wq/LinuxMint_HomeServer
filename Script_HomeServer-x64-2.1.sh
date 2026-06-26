@@ -307,16 +307,23 @@ chmod 755 "$USER_HOME/Server"
 echo "=== CONFIGURING FILEBROWSER USER ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
+# Remove banco antigo para garantir estado limpo
+rm -f "$USER_HOME/filebrowser.db"
+
+# Inicializa o banco corretamente
+filebrowser config init -d "$USER_HOME/filebrowser.db"
+filebrowser config set -d "$USER_HOME/filebrowser.db" --root "$USER_HOME/Server"
+
+# Remove o admin padrão e cria o usuário correto
+filebrowser users rm admin -d "$USER_HOME/filebrowser.db" 2>/dev/null || true
+
 filebrowser users add "$CURRENT_USER" "$FB_PASS" \
-    --scope "$USER_HOME/Server" \
+    -d "$USER_HOME/filebrowser.db" \
     --perm.admin \
-    -d "$USER_HOME/filebrowser.db"
+    --scope "$USER_HOME/Server"
 
-mkdir -p "$USER_HOME/Server"
-
-filebrowser users update "$CURRENT_USER" \
-    --password "$FB_PASS" \
-    -d "$USER_HOME/filebrowser.db"
+chown "$CURRENT_USER":"$CURRENT_USER" "$USER_HOME/filebrowser.db"
+chmod 600 "$USER_HOME/filebrowser.db"
 
 sudo bash -c "cat > /etc/systemd/system/filebrowser.service << EOF
 [Unit]
