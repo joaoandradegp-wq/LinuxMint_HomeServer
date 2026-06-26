@@ -267,18 +267,10 @@ echo "============================================================"
 echo "TAILSCALE SETUP"
 echo "============================================================"
 echo ""
-echo "The next command will display a login URL."
-echo "Open the URL in your browser and authorize this server."
-echo ""
-echo "After authentication completes, return to this terminal."
-echo ""
-read -p "Press ENTER to continue..." < /dev/tty
+echo "Press ENTER to start the authentication process."
+read -p "" < /dev/tty
 
-sudo tailscale up --accept-dns=false
-
-echo ""
-echo "Tailscale authentication completed."
-echo ""
+sudo tailscale up --accept-dns=false < /dev/tty
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== REMOVING FIREFOX ==="
