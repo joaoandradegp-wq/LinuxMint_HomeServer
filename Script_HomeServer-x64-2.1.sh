@@ -218,13 +218,14 @@ echo "=== SETTING SAMBA AND FILEBROWSER PASSWORD ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
 while true; do
-    read -s -p "Enter the password for Samba and FileBrowser: " SMB_PASS < /dev/tty
+    read -s -p "Enter the password for Samba and FileBrowser (minimum 12 characters): " SMB_PASS < /dev/tty
     echo
+
     read -s -p "Confirm password: " SMB_PASS2 < /dev/tty
     echo
 
-    if [ -z "$SMB_PASS" ]; then
-        echo "Password cannot be empty."
+    if [ ${#SMB_PASS} -lt 12 ]; then
+        echo "Password must contain at least 12 characters."
         continue
     fi
 
@@ -302,7 +303,7 @@ echo "=== CONFIGURING FILEBROWSER USER ==="
 
 filebrowser users add "$CURRENT_USER" "$FB_PASS" "$USER_HOME/Server" \
     -d "$USER_HOME/filebrowser.db" \
-    --perm.admin 2>/dev/null \
+    --perm.admin \
     || filebrowser users update "$CURRENT_USER" "$FB_PASS" -d "$USER_HOME/filebrowser.db"
 
 sudo bash -c "cat > /etc/systemd/system/filebrowser.service << EOF
@@ -508,11 +509,11 @@ EOF
 cat > "$DESKTOP_DIR/ServerPanel.desktop" << EOF
 [Desktop Entry]
 Version=1.0
-Type=Link
+Type=Application
 Name=Server Panel
-Comment=
+Exec=python3 /home/phobos/Python_ServerPanel.py
 Icon=preferences-system
-URL=$USER_HOME/Python_ServerPanel.py
+Terminal=false
 EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
