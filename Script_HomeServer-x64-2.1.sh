@@ -293,7 +293,7 @@ command -v filebrowser >/dev/null 2>&1 || {
     exit 1
 }
 
-filebrowser -d "$USER_HOME/filebrowser.db" config init || true
+rm -f "$USER_HOME/filebrowser.db"
 chown "$CURRENT_USER":"$CURRENT_USER" "$USER_HOME/filebrowser.db"
 chmod 600 "$USER_HOME/filebrowser.db"
 
@@ -303,10 +303,13 @@ echo "=== CONFIGURING FILEBROWSER USER ==="
 
 echo "=== CONFIGURING FILEBROWSER USER ==="
 
+# Create the user if it doesn't exist
 filebrowser -d "$USER_HOME/filebrowser.db" users add "$CURRENT_USER" "$FB_PASS" \
-    || echo "User already exists, updating..."
+    2>/dev/null || true
 
+# Always enforce the desired configuration
 filebrowser -d "$USER_HOME/filebrowser.db" users update "$CURRENT_USER" \
+    --password "$FB_PASS" \
     --scope "$USER_HOME/Server" \
     --perm.admin true
 
@@ -335,7 +338,6 @@ EOF"
 
 sudo systemctl daemon-reload
 sudo systemctl enable filebrowser
-sudo systemctl restart filebrowser
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== CONFIGURING SENSORS ==="
@@ -522,6 +524,10 @@ EOF
 
 chmod +x "$DESKTOP_DIR"/*.desktop 2>/dev/null
 chown "$CURRENT_USER:$CURRENT_USER" "$DESKTOP_DIR"/*.desktop 2>/dev/null
+
+echo "=== STARTING FILEBROWSER ==="
+sudo systemctl restart filebrowser
+sleep 2
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo ""
