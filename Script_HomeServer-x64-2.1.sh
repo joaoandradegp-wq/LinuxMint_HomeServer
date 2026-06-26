@@ -292,18 +292,16 @@ command -v filebrowser >/dev/null 2>&1 || {
     echo "FileBrowser install failed"
     exit 1
 }
+mkdir -p "$USER_HOME/Server"
 
 rm -f "$USER_HOME/filebrowser.db"
-
-filebrowser config init -d "$USER_HOME/filebrowser.db"
-
-if [ ! -f "$USER_HOME/filebrowser.db" ]; then
-    echo "ERROR: FileBrowser database was not created."
-    exit 1
-fi
+touch "$USER_HOME/filebrowser.db"
 
 chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/filebrowser.db"
 chmod 600 "$USER_HOME/filebrowser.db"
+
+chown -R "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/Server"
+chmod 755 "$USER_HOME/Server"
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== CONFIGURING FILEBROWSER USER ==="
@@ -313,6 +311,8 @@ filebrowser users add "$CURRENT_USER" "$FB_PASS" \
     --scope "$USER_HOME/Server" \
     --perm.admin \
     -d "$USER_HOME/filebrowser.db"
+
+mkdir -p "$USER_HOME/Server"
 
 filebrowser users update "$CURRENT_USER" \
     --password "$FB_PASS" \
@@ -329,7 +329,7 @@ Type=simple
 User=$CURRENT_USER
 WorkingDirectory=$USER_HOME
 ExecStart=/usr/local/bin/filebrowser \\
-    -r $USER_HOME/Server \\
+    -r /home/$CURRENT_USER/Server \\
     -d $USER_HOME/filebrowser.db \\
     -a 0.0.0.0 \\
     -p 8080
