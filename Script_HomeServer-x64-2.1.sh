@@ -294,24 +294,29 @@ command -v filebrowser >/dev/null 2>&1 || {
 }
 
 rm -f "$USER_HOME/filebrowser.db"
-chown "$CURRENT_USER":"$CURRENT_USER" "$USER_HOME/filebrowser.db"
+
+filebrowser config init -d "$USER_HOME/filebrowser.db"
+
+if [ ! -f "$USER_HOME/filebrowser.db" ]; then
+    echo "ERROR: FileBrowser database was not created."
+    exit 1
+fi
+
+chown "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/filebrowser.db"
 chmod 600 "$USER_HOME/filebrowser.db"
 
 # ══════════════════════════════════════════════════════════════════════════════
 echo "=== CONFIGURING FILEBROWSER USER ==="
 # ══════════════════════════════════════════════════════════════════════════════
 
-echo "=== CONFIGURING FILEBROWSER USER ==="
-
-# Create the user if it doesn't exist
-filebrowser -d "$USER_HOME/filebrowser.db" users add "$CURRENT_USER" "$FB_PASS" \
-    2>/dev/null || true
-
-# Always enforce the desired configuration
-filebrowser -d "$USER_HOME/filebrowser.db" users update "$CURRENT_USER" \
-    --password "$FB_PASS" \
+filebrowser users add "$CURRENT_USER" "$FB_PASS" \
     --scope "$USER_HOME/Server" \
-    --perm.admin true
+    --perm.admin \
+    -d "$USER_HOME/filebrowser.db"
+
+filebrowser users update "$CURRENT_USER" \
+    --password "$FB_PASS" \
+    -d "$USER_HOME/filebrowser.db"
 
 sudo bash -c "cat > /etc/systemd/system/filebrowser.service << EOF
 [Unit]
