@@ -330,10 +330,14 @@ Choose the installer that matches your Linux Mint version and system architectur
 
 ---
 
-## 📸 Server Panel Preview
+## 📸 Personal Server Project (VHS Case)
 
 <p align="center">
-  <img width="350" src="https://github.com/user-attachments/assets/02a98517-f720-42db-b8cb-2e637fb3e423" />
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/865475c4-c716-4783-b014-eb803b48e3a4" />
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/1299835f-8826-4ca6-badc-f688f726b320" /><br>
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/5bc835c1-9d4f-4bac-9c8d-a5916e34a222" />
+  <img width="250" alt="image" src="https://github.com/user-attachments/assets/3b29c7b0-6788-467b-95d0-4bbd265b1cb3" />
+
 </p>
 
 ---
