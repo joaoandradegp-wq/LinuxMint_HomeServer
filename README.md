@@ -325,7 +325,9 @@ Choose the installer that matches your Linux Mint version and system architectur
 ## 📸 Linux Mint Preview
 
 <p align="center">
-  <img width="500" alt="image" src="https://github.com/user-attachments/assets/b60e2523-349c-4d17-8a40-26412744eaa2" />
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/d9a12f77-6fb3-4b87-a80d-207cc040fa36" />
+
+
 </p>
 
 ---
