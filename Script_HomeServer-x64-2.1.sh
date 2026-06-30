@@ -425,9 +425,9 @@ conky.config = {
 
     own_window = true,
     own_window_type = 'dock',
-    own_window_transparent = true,
+    own_window_transparent = false,
     own_window_argb_visual = true,
-    own_window_argb_value = 0,
+    own_window_argb_value = 220,
 
     draw_shades = false,
     draw_outline = false,
@@ -459,9 +459,10 @@ ${fs_bar 8 /}
 ${fs_used /} / ${fs_size /}
 
 ${color grey}NETWORK (LAN):${color}
+Link Speed: ${execi 10 cat /sys/class/net/enx00e04c580ace/speed} Mb/s
 IP: ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
-Down: ${downspeed enp2s0}
-Up:     ${upspeed enp2s0}
+Down: ${downspeed enx00e04c580ace}
+Up:     ${upspeed enx00e04c580ace}
 
 ${color grey}FILE BROWSER:${color} \
 ${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
