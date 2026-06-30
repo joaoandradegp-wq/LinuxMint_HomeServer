@@ -12,9 +12,9 @@ conky.config = {
 
     own_window = true,
     own_window_type = 'dock',
-    own_window_transparent = true,
+    own_window_transparent = false,
     own_window_argb_visual = true,
-    own_window_argb_value = 0,
+    own_window_argb_value = 220,
 
     draw_shades = false,
     draw_outline = false,
