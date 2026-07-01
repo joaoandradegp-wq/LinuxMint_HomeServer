@@ -414,7 +414,7 @@ cat > "$USER_HOME/.conkyrc" << 'EOF'
 conky.config = {
     alignment = 'top_right',
     gap_x = 20,
-    gap_y = 5,
+    gap_y = 20,
 
     minimum_width = 300,
     maximum_width = 400,
