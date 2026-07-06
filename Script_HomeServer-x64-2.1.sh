@@ -459,10 +459,10 @@ ${fs_bar 8 /}
 ${fs_used /} / ${fs_size /}
 
 ${color grey}NETWORK (LAN):${color}
-Link Speed: ${execi 10 cat /sys/class/net/enx00e04c580ace/speed} Mb/s
 IP: ${execi 10 hostname -I | awk '{print $1}' | sed 's/^$/Offline/'}
 Down: ${downspeed enx00e04c580ace}
 Up:     ${upspeed enx00e04c580ace}
+Link Speed: ${execi 10 bash -c 's=$(cat /sys/class/net/enx00e04c580ace/speed); if [ "$s" -ge 1000 ]; then echo "$((s/1000)) Gb/s"; else echo "${s} Mb/s"; fi'}
 
 ${color grey}FILE BROWSER:${color} \
 ${if_match ${execi 10 systemctl is-active filebrowser | grep -c active} == 1}\
