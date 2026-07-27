@@ -37,13 +37,6 @@ Choose the installer that matches your Linux Mint version and system architectur
 | Linux Mint 22.3 XFCE | **64-bit (x64)** | 2026-06-25 | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.1.sh"><b>Click here</b></a> |
 | Linux Mint 19.x XFCE | **32-bit (x86)** | 2026-04-26 | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh"><b>Click here</b></a> |
 
-| Version | Architecture | Download |
-|----------|-------------|----------|
-| Server Panel 1.0 | **Python 3** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Python_ServerPanel.py"><b>Click here</b></a> |
-
-> **Recommended:** Use the **Python GUI Manager (Tkinter)** on Linux Mint 22.3 XFCE or newer for full visual management of Samba shares, Conky monitoring configuration, and FileBrowser settings.  
-> The tool is included as part of the modern (64-bit) Home Server installer and provides a graphical alternative to manual configuration files.
-
 ---
 
 ## ✨ Script details
