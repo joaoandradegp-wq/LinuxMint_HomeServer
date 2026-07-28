@@ -1,70 +1,322 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog, Toplevel, messagebox
+from tkinter import ttk, messagebox
+
 from pathlib import Path
 
 import subprocess
 import re
 import socket
+import os
 import urllib.request
 
 ########################################################
-# GLOBAL CONFIG
+# CONSTANTS
 ########################################################
 
-FONT_TITLE = ("Arial", 12, "bold")
-FONT_STATUS = ("Arial", 10, "bold")
-FONT_NOTE = ("Arial", 9)
+DIALOG_WIDTH = 420
+DIALOG_HEIGHT = 220
 
-PAD = 10
-BTN_WIDTH = 16
-ENTRY_WIDTH = 45
+STATUS_OK = "#0a7d2c"
+STATUS_ERROR = "#c0392b"
 
-SAMBA_USER = ""
+########################################################
+# STATE
+########################################################
+
+SUDO_PASSWORD = None
 
 FILEBROWSER_SERVICE = "filebrowser"
 MONITOR_SERVICE = "sevastolink"
 MONITOR_PORT = 8181
 
+MONITOR_INSTALL_DIR = Path.home() / "SevastolinkMonitor"
+MONITOR_VENV_DIR = MONITOR_INSTALL_DIR / ".venv"
+MONITOR_API_PATH = MONITOR_INSTALL_DIR / "api.py"
+MONITOR_SERVICE_UNIT_PATH = "/etc/systemd/system/sevastolink.service"
+MONITOR_INSTALL_STEPS = 10
+
+MONITOR_API_PY = '''from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
+import uvicorn, psutil, socket, subprocess, platform, os, time
+from datetime import timedelta
+
+app = FastAPI(title="Sevastolink Monitor")
+
+def run(cmd):
+    try:
+        return subprocess.check_output(cmd,shell=True,text=True,stderr=subprocess.DEVNULL).strip()
+    except:
+        return ""
+
+def svc(name):
+    return "ONLINE" if run(f"systemctl is-active {name}")=="active" else "OFFLINE"
+
+def cpu_model():
+    return run("cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d ':' -f2").strip()
+
+def cpu_temp():
+    try:
+        for v in psutil.sensors_temperatures().values():
+            for e in v:
+                return round(e.current,1)
+    except:
+        pass
+    return None
+
+def iface():
+    for n,s in psutil.net_if_stats().items():
+        if s.isup and n!="lo" and not n.startswith("tailscale"):
+            return n
+    return ""
+
+IFACE=iface()
+old=psutil.net_io_counters(pernic=True)
+oldt=time.time()
+
+def speed():
+    global old,oldt
+    if IFACE not in psutil.net_io_counters(pernic=True): return (0,0)
+    now=time.time()
+    cur=psutil.net_io_counters(pernic=True)
+    dt=max(now-oldt,0.001)
+    d=(cur[IFACE].bytes_recv-old[IFACE].bytes_recv)/dt/1024/1024
+    u=(cur[IFACE].bytes_sent-old[IFACE].bytes_sent)/dt/1024/1024
+    old,oldt=cur,now
+    return round(d,2),round(u,2)
+
+def ip():
+    for a in psutil.net_if_addrs().get(IFACE,[]):
+        if a.family==socket.AF_INET:
+            return a.address
+    return "Offline"
+
+def linkspeed():
+    p=f"/sys/class/net/{IFACE}/speed"
+    try:
+        s=int(open(p).read().strip())
+        return f"{s//1000} Gb/s" if s>=1000 else f"{s} Mb/s"
+    except:
+        return "Unknown"
+
+@app.get("/api/rainmeter", response_class=PlainTextResponse)
+def rain():
+    cpu=psutil.cpu_percent(interval=0.5)
+    mem=psutil.virtual_memory()
+    sw=psutil.swap_memory()
+    dk=psutil.disk_usage("/")
+    down,up=speed()
+    uptime=str(timedelta(seconds=int(time.time()-psutil.boot_time())))
+    tsip=run("ip -4 addr show tailscale0 | grep inet | awk '{print $2}' | cut -d/ -f1") or "Offline"
+    lines=[
+        f"HOSTNAME={platform.node()}",
+        f"CPU_MODEL={cpu_model()}",
+        f"CPU_CORES={psutil.cpu_count(logical=False)}",
+        f"CPU_THREADS={psutil.cpu_count(logical=True)}",
+        f"CPU_FREQ={round(psutil.cpu_freq().current/1000,2)}",
+        f"CPU_TEMP={cpu_temp()}",
+        f"CPU_USAGE={cpu}",
+        f"RAM_USED={round(mem.used/1024**3,2)}",
+        f"RAM_TOTAL={round(mem.total/1024**3,2)}",
+        f"RAM_PERCENT={mem.percent}",
+        f"SWAP_USED={round(sw.used/1024**3,2)}",
+        f"SWAP_TOTAL={round(sw.total/1024**3,2)}",
+        f"SWAP_PERCENT={sw.percent}",
+        f"DISK_USED={round(dk.used/1024**3,2)}",
+        f"DISK_TOTAL={round(dk.total/1024**3,2)}",
+        f"DISK_PERCENT={dk.percent}",
+        f"LAN_IP={ip()}",
+        f"DOWNLOAD={down}",
+        f"UPLOAD={up}",
+        f"LINK_SPEED={linkspeed()}",
+        f"FILEBROWSER={svc('filebrowser')}",
+        f"TAILSCALE={svc('tailscaled')}",
+        f"TAILSCALE_IP={tsip}",
+        f"UPTIME={uptime}"
+    ]
+    return "\\n".join(lines)
+
+if __name__=="__main__":
+    uvicorn.run("api:app",host="0.0.0.0",port=8181)
+'''
+
+########################################################
+# ROOT
+########################################################
+
 root = tk.Tk()
 
 root.title("Home Server Control Panel")
-root.geometry("860x540")
-root.minsize(780, 480)
+root.geometry("640x480")
+root.minsize(430, 280)
 
-style = ttk.Style()
-style.configure("Treeview", rowheight=24)
-style.configure("Treeview.Heading", font=("Arial", 10, "bold"))
+notebook = ttk.Notebook(root)
+notebook.pack(fill="both", expand=True)
+
+tab_shares = ttk.Frame(notebook)
+tab_conky = ttk.Frame(notebook)
+tab_filebrowser = ttk.Frame(notebook)
+tab_monitor = ttk.Frame(notebook)
+
+notebook.add(tab_shares, text="Shares")
+notebook.add(tab_conky, text="Conky")
+notebook.add(tab_filebrowser, text="FileBrowser")
+notebook.add(tab_monitor, text="Server Monitor")
 
 ########################################################
-# HELPERS
+# LAYOUT HELPERS
 ########################################################
 
-def section_title(parent, text):
+def build_page(parent, title, subtitle):
+    """Creates the standard page skeleton: header, bottom toolbar, content area."""
 
-    lbl = tk.Label(parent, text=text, font=FONT_TITLE)
-    lbl.pack(anchor="w", pady=(0, PAD))
+    header = ttk.Frame(parent, padding=10)
+    header.pack(fill="x")
 
-    return lbl
+    ttk.Label(header, text=title, font=("Segoe UI", 16, "bold")).pack(anchor="w")
+    ttk.Label(header, text=subtitle).pack(anchor="w")
+
+    toolbar = ttk.Frame(parent, padding=10)
+    toolbar.pack(fill="x", side="bottom")
+
+    content = ttk.Frame(parent, padding=10)
+    content.pack(fill="both", expand=True)
+
+    return content, toolbar
 
 
-def make_treeview(parent, columns, headings, widths):
+def build_treeview(content, columns, headings, widths):
 
-    container = tk.Frame(parent)
-    container.pack(fill="both", expand=True)
-
-    tree = ttk.Treeview(container, columns=columns, show="headings")
+    tree = ttk.Treeview(content, columns=columns, show="headings")
 
     for col, head, width in zip(columns, headings, widths):
         tree.heading(col, text=head)
         tree.column(col, width=width)
 
-    scroll = ttk.Scrollbar(container, orient="vertical", command=tree.yview)
+    scroll = ttk.Scrollbar(content, orient="vertical", command=tree.yview)
     tree.configure(yscrollcommand=scroll.set)
 
-    scroll.pack(side="right", fill="y")
     tree.pack(side="left", fill="both", expand=True)
+    scroll.pack(side="right", fill="y")
 
     return tree
+
+
+def status_badge(parent):
+    """Plain colored-text label used to show ONLINE / OFFLINE."""
+    return ttk.Label(parent, text="-")
+
+
+def set_status_badge(label, active):
+
+    if active:
+        label.config(text="ONLINE", foreground=STATUS_OK)
+    else:
+        label.config(text="OFFLINE", foreground=STATUS_ERROR)
+
+
+def center_dialog(win, width, height):
+
+    root.update_idletasks()
+
+    x = root.winfo_x() + root.winfo_width() // 2 - width // 2
+    y = root.winfo_y() + root.winfo_height() // 2 - height // 2
+
+    win.geometry(f"{width}x{height}+{x}+{y}")
+
+
+def open_dialog(title, width=DIALOG_WIDTH, height=DIALOG_HEIGHT):
+
+    win = tk.Toplevel(root)
+
+    win.title(title)
+
+    center_dialog(win, width, height)
+
+    win.resizable(False, False)
+    win.transient(root)
+    win.grab_set()
+
+    return win
+
+########################################################
+# SUDO HELPER
+########################################################
+
+def ask_sudo_password():
+
+    global SUDO_PASSWORD
+
+    win = open_dialog("Administrator Password", 380, 190)
+
+    frame = ttk.Frame(win, padding=20)
+    frame.pack(fill="both", expand=True)
+
+    ttk.Label(frame, text="Administrator Password", font=("Segoe UI", 11, "bold")).pack(anchor="w")
+    ttk.Label(frame, text="Required to manage system services.").pack(anchor="w", pady=(2, 12))
+
+    entry = ttk.Entry(frame, show="*")
+    entry.pack(fill="x")
+    entry.focus()
+
+    result = {"value": None}
+
+    def confirm():
+        result["value"] = entry.get()
+        win.destroy()
+
+    def cancel():
+        result["value"] = None
+        win.destroy()
+
+    btns = ttk.Frame(frame)
+    btns.pack(fill="x", pady=(20, 0))
+
+    ttk.Button(btns, text="Cancel", command=cancel).pack(side="right")
+    ttk.Button(btns, text="Confirm", command=confirm).pack(side="right", padx=5)
+
+    win.bind("<Return>", lambda e: confirm())
+    win.bind("<Escape>", lambda e: cancel())
+
+    win.wait_window()
+
+    SUDO_PASSWORD = result["value"] if result["value"] else None
+
+
+def run_sudo(cmd):
+    """Runs a command with sudo, feeding the cached password via stdin
+    so the user is never dropped into a terminal prompt."""
+
+    global SUDO_PASSWORD
+
+    if SUDO_PASSWORD is None:
+
+        ask_sudo_password()
+
+        if SUDO_PASSWORD is None:
+            return False, "Cancelled by user"
+
+    try:
+        result = subprocess.run(
+            ["sudo", "-S", "-p", ""] + cmd,
+            input=SUDO_PASSWORD + "\n",
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+
+    except Exception as e:
+        return False, str(e)
+
+    if result.returncode != 0:
+
+        stderr = (result.stderr or "").lower()
+
+        if "incorrect password" in stderr or "sorry" in stderr or "authentication" in stderr:
+            SUDO_PASSWORD = None
+
+        return False, (result.stderr or "Command failed").strip()
+
+    return True, result.stdout.strip()
 
 
 def service_is_active(name):
@@ -82,177 +334,69 @@ def service_is_active(name):
 
 
 def start_service(name):
-    subprocess.run(["sudo", "systemctl", "start", name])
+
+    ok, msg = run_sudo(["systemctl", "start", name])
+
+    if not ok:
+        messagebox.showerror("Error", f"Failed to start {name}:\n{msg}")
+
+    return ok
 
 
 def stop_service(name):
-    subprocess.run(["sudo", "systemctl", "stop", name])
+
+    ok, msg = run_sudo(["systemctl", "stop", name])
+
+    if not ok:
+        messagebox.showerror("Error", f"Failed to stop {name}:\n{msg}")
+
+    return ok
 
 
 def restart_service(name):
-    subprocess.run(["sudo", "systemctl", "restart", name])
 
+    ok, msg = run_sudo(["systemctl", "restart", name])
 
-def set_status_label(label, active):
+    if not ok:
+        messagebox.showerror("Error", f"Failed to restart {name}:\n{msg}")
 
-    if active:
-        label.config(text="Status: ONLINE", fg="green")
-    else:
-        label.config(text="Status: OFFLINE", fg="red")
-
-########################################################
-# TABS
-########################################################
-
-tabs = ttk.Notebook(root)
-
-tab_shares = ttk.Frame(tabs)
-tab_conky = ttk.Frame(tabs)
-tab_filebrowser = ttk.Frame(tabs)
-tab_monitor = ttk.Frame(tabs)
-
-tabs.add(tab_shares, text="Shares")
-tabs.add(tab_conky, text="Conky")
-tabs.add(tab_filebrowser, text="FileBrowser")
-tabs.add(tab_monitor, text="Server Monitor")
-
-tabs.pack(fill="both", expand=True)
+    return ok
 
 ########################################################
 # SHARES TAB
 ########################################################
 
-frame_shares = tk.Frame(tab_shares, padx=PAD, pady=PAD)
-frame_shares.pack(fill="both", expand=True)
+def build_shares_tab(parent):
 
-section_title(frame_shares, "Samba Shares")
+    global tree_shares
 
-tree_shares = make_treeview(
-    frame_shares,
-    columns=("name", "path"),
-    headings=("Share", "Path"),
-    widths=(220, 480)
-)
+    content, toolbar = build_page(
+        parent,
+        "Samba Shares",
+        "Manage folders shared on the network via Samba."
+    )
 
+    tree_shares = build_treeview(
+        content,
+        columns=("name", "path"),
+        headings=("Share", "Path"),
+        widths=(240, 240)
+    )
 
-def on_share_double_click(event):
+    def on_double_click(event):
 
-    item = tree_shares.identify_row(event.y)
+        item = tree_shares.identify_row(event.y)
 
-    if item:
-        tree_shares.selection_set(item)
-        edit_share(True)
+        if item:
+            tree_shares.selection_set(item)
+            edit_share(True)
 
+    tree_shares.bind("<Double-1>", on_double_click)
 
-tree_shares.bind("<Double-1>", on_share_double_click)
-
-toolbar_shares = tk.Frame(frame_shares)
-toolbar_shares.pack(fill="x", pady=(PAD, 0))
-
-lbl_samba = tk.Label(toolbar_shares, text="Force User: -")
-
-########################################################
-# CONKY TAB
-########################################################
-
-frame_conky = tk.Frame(tab_conky, padx=PAD, pady=PAD)
-frame_conky.pack(fill="both", expand=True)
-
-section_title(frame_conky, "Conky Disks")
-
-tree_conky = make_treeview(
-    frame_conky,
-    columns=("idx", "name", "path"),
-    headings=("#", "Name", "Path"),
-    widths=(40, 200, 320)
-)
-
-
-def on_conky_double_click(event):
-
-    item = tree_conky.identify_row(event.y)
-
-    if item:
-        tree_conky.selection_set(item)
-        edit_conky(True)
-
-
-tree_conky.bind("<Double-1>", on_conky_double_click)
-
-toolbar_conky = tk.Frame(frame_conky)
-toolbar_conky.pack(fill="x", pady=(PAD, 0))
-
-########################################################
-# FILEBROWSER TAB
-########################################################
-
-frame_fb = tk.Frame(tab_filebrowser, padx=PAD, pady=PAD)
-frame_fb.pack(fill="both", expand=True)
-
-section_title(frame_fb, "FileBrowser")
-
-tk.Label(frame_fb, text="Root Path", anchor="w").pack(fill="x")
-
-txt_fb = tk.Text(frame_fb, height=3, width=70)
-txt_fb.pack(pady=(5, PAD), fill="x")
-
-lbl_fb_status = tk.Label(frame_fb, text="Status: -", font=FONT_STATUS)
-lbl_fb_status.pack(anchor="w", pady=(0, PAD))
-
-toolbar_fb = tk.Frame(frame_fb)
-toolbar_fb.pack(fill="x")
-
-########################################################
-# SERVER MONITOR TAB
-########################################################
-
-frame_monitor = tk.Frame(tab_monitor, padx=PAD, pady=PAD)
-frame_monitor.pack(fill="both", expand=True)
-
-section_title(frame_monitor, "Server Monitor (Sevastolink API)")
-
-lbl_monitor_status = tk.Label(frame_monitor, text="Status: -", font=FONT_STATUS)
-lbl_monitor_status.pack(anchor="w")
-
-lbl_monitor_url = tk.Label(
-    frame_monitor,
-    text=f"Endpoint: http://{socket.gethostname()}:{MONITOR_PORT}/api/rainmeter",
-    fg="gray",
-    font=FONT_NOTE
-)
-lbl_monitor_url.pack(anchor="w", pady=(0, PAD))
-
-tree_monitor = make_treeview(
-    frame_monitor,
-    columns=("metric", "value"),
-    headings=("Metric", "Value"),
-    widths=(220, 480)
-)
-
-toolbar_monitor = tk.Frame(frame_monitor)
-toolbar_monitor.pack(fill="x", pady=(PAD, 0))
-
-########################################################
-# LOAD SAMBA
-########################################################
-
-def load_samba_user():
-
-    global SAMBA_USER
-
-    path = Path("/etc/samba/smb.conf")
-
-    if not path.exists():
-        SAMBA_USER = ""
-        return
-
-    txt = path.read_text()
-
-    m = re.search(r'force user\s*=\s*(.+)', txt, re.I)
-
-    SAMBA_USER = m.group(1).strip() if m else ""
-
-    lbl_samba.config(text=f"Force User: {SAMBA_USER}")
+    ttk.Button(toolbar, text="Save", command=save_samba).pack(side="right")
+    ttk.Button(toolbar, text="Delete", command=delete_share).pack(side="right", padx=5)
+    ttk.Button(toolbar, text="Edit", command=lambda: edit_share(True)).pack(side="right", padx=5)
+    ttk.Button(toolbar, text="Add", command=edit_share).pack(side="right", padx=5)
 
 
 def load_samba():
@@ -289,9 +433,6 @@ def load_samba():
 
         tree_shares.insert("", "end", values=(name, path_value))
 
-########################################################
-# EDIT SHARE
-########################################################
 
 def edit_share(edit=False):
 
@@ -310,78 +451,64 @@ def edit_share(edit=False):
 
         name, path_value = tree_shares.item(item)["values"]
 
-    win = Toplevel(root)
+    win = open_dialog("Share")
 
-    win.title("Share Configuration")
-    win.geometry("520x240")
-    win.resizable(False, False)
-
-    frame = tk.Frame(win, padx=20, pady=20)
+    frame = ttk.Frame(win, padding=20)
     frame.pack(fill="both", expand=True)
 
-    tk.Label(
-        frame,
-        text="Share Configuration",
-        font=FONT_TITLE
-    ).pack(pady=(0, 15))
+    ttk.Label(frame, text="Share name").pack(anchor="w")
 
-    row1 = tk.Frame(frame)
-    row1.pack(fill="x", pady=5)
-
-    tk.Label(row1, text="Name", width=15, anchor="w").pack(side="left")
-
-    e_name = tk.Entry(row1, width=ENTRY_WIDTH)
-    e_name.pack(side="left", fill="x", expand=True)
+    e_name = ttk.Entry(frame)
     e_name.insert(0, name)
+    e_name.pack(fill="x", pady=(5, 12))
 
-    row2 = tk.Frame(frame)
-    row2.pack(fill="x", pady=5)
+    ttk.Label(frame, text="Path").pack(anchor="w")
 
-    tk.Label(row2, text="Path", width=15, anchor="w").pack(side="left")
-
-    e_path = tk.Entry(row2, width=ENTRY_WIDTH)
-    e_path.pack(side="left", fill="x", expand=True)
+    e_path = ttk.Entry(frame)
     e_path.insert(0, path_value)
+    e_path.pack(fill="x", pady=(5, 12))
 
-    tk.Label(
+    ttk.Label(
         frame,
-        text="The folder will be created automatically if it doesn't exist.",
-        fg="gray",
-        font=FONT_NOTE
-    ).pack(pady=15)
+        text="The folder will be created automatically if it doesn't exist."
+    ).pack(anchor="w")
 
-    bottom = tk.Frame(frame)
-    bottom.pack(side="bottom", fill="x")
+    btns = ttk.Frame(win, padding=(20, 12))
+    btns.pack(side="bottom", fill="x")
 
     def save():
 
-        name = e_name.get().strip()
-        path_value = e_path.get().strip()
+        new_name = e_name.get().strip()
+        new_path = e_path.get().strip()
 
-        if not name or not path_value:
+        if not new_name or not new_path:
+            messagebox.showwarning("Warning", "Please fill in both fields")
             return
 
-        subprocess.run(["sudo", "mkdir", "-p", path_value])
-        subprocess.run(["sudo", "chmod", "755", path_value])
+        ok1, m1 = run_sudo(["mkdir", "-p", new_path])
+        ok2, m2 = run_sudo(["chmod", "755", new_path])
 
-        subprocess.run(["sudo", "chown", f"{SAMBA_USER}:{SAMBA_USER}", path_value])
+        if not (ok1 and ok2):
+            messagebox.showerror("Error", f"Failed to prepare the folder:\n{m1 or m2}")
+            return
 
-        values = (name, path_value)
+        values = (new_name, new_path)
 
         if edit:
             tree_shares.item(item, values=values)
-
         else:
             tree_shares.insert("", "end", values=values)
 
         win.destroy()
 
-    tk.Button(bottom, text="Save", width=12, command=save).pack(side="right", padx=5)
-    tk.Button(bottom, text="Cancel", width=12, command=win.destroy).pack(side="right")
+    ttk.Button(btns, text="Cancel", command=win.destroy).pack(side="right")
+    ttk.Button(btns, text="Save", command=save).pack(side="right", padx=5)
 
-########################################################
-# DELETE SHARE
-########################################################
+    e_name.focus()
+
+    win.bind("<Return>", lambda e: save())
+    win.bind("<Escape>", lambda e: win.destroy())
+
 
 def delete_share():
 
@@ -390,9 +517,6 @@ def delete_share():
     if sel:
         tree_shares.delete(sel[0])
 
-########################################################
-# SAVE SAMBA
-########################################################
 
 def save_samba():
 
@@ -422,42 +546,57 @@ browseable = yes
 read only = no
 
 guest ok = yes
-force user = {SAMBA_USER}
 
 """
 
     Path("/tmp/smb.conf").write_text(txt)
 
-    subprocess.run(["sudo", "cp", "/tmp/smb.conf", "/etc/samba/smb.conf"])
+    ok1, m1 = run_sudo(["cp", "/tmp/smb.conf", "/etc/samba/smb.conf"])
+    ok2, m2 = run_sudo(["systemctl", "restart", "smbd"])
 
-    subprocess.run(["sudo", "systemctl", "restart", "smbd"])
-
-    messagebox.showinfo("OK", "Samba configuration updated")
-
-########################################################
-# CHANGE SAMBA USER
-########################################################
-
-def change_samba_user():
-
-    global SAMBA_USER
-
-    user = simpledialog.askstring(
-        "Force User",
-        "Linux user:",
-        initialvalue=SAMBA_USER
-    )
-
-    if not user:
+    if not (ok1 and ok2):
+        messagebox.showerror("Error", f"Failed to apply the Samba configuration:\n{m1 or m2}")
         return
 
-    SAMBA_USER = user
+    messagebox.showinfo("Saved", "Samba configuration updated")
 
-    lbl_samba.config(text=f"Force User: {user}")
 
 ########################################################
-# CONKY
+# CONKY TAB
 ########################################################
+
+def build_conky_tab(parent):
+
+    global tree_conky
+
+    content, toolbar = build_page(
+        parent,
+        "Conky Disks",
+        "Disks displayed in the Conky system monitor."
+    )
+
+    tree_conky = build_treeview(
+        content,
+        columns=("idx", "name", "path"),
+        headings=("#", "Name", "Path"),
+        widths=(50, 220, 350)
+    )
+
+    def on_double_click(event):
+
+        item = tree_conky.identify_row(event.y)
+
+        if item:
+            tree_conky.selection_set(item)
+            edit_conky(True)
+
+    tree_conky.bind("<Double-1>", on_double_click)
+
+    ttk.Button(toolbar, text="Save", command=save_conky).pack(side="right")
+    ttk.Button(toolbar, text="Delete", command=delete_conky).pack(side="right", padx=5)
+    ttk.Button(toolbar, text="Edit", command=lambda: edit_conky(True)).pack(side="right", padx=5)
+    ttk.Button(toolbar, text="Add", command=edit_conky).pack(side="right", padx=5)
+
 
 def load_conky():
 
@@ -476,7 +615,6 @@ def load_conky():
     )
 
     for idx, name, mount in pattern:
-
         tree_conky.insert("", "end", values=(int(idx), name.strip(), mount.strip()))
 
 
@@ -500,72 +638,58 @@ def edit_conky(edit=False):
         idx, name, path_value = tree_conky.item(item)["values"]
 
     else:
-
         idx = len(tree_conky.get_children()) + 1
 
-    win = Toplevel(root)
+    win = open_dialog("Conky Disk")
 
-    win.title("Conky Disk")
-    win.geometry("520x240")
-    win.resizable(False, False)
-
-    frame = tk.Frame(win, padx=20, pady=20)
+    frame = ttk.Frame(win, padding=20)
     frame.pack(fill="both", expand=True)
 
-    tk.Label(
-        frame,
-        text="Conky Disk Configuration",
-        font=FONT_TITLE
-    ).pack(pady=(0, 15))
+    ttk.Label(frame, text="Name").pack(anchor="w")
 
-    row1 = tk.Frame(frame)
-    row1.pack(fill="x", pady=5)
-
-    tk.Label(row1, text="Name", width=15, anchor="w").pack(side="left")
-
-    e_name = tk.Entry(row1, width=ENTRY_WIDTH)
-    e_name.pack(side="left", fill="x", expand=True)
+    e_name = ttk.Entry(frame)
     e_name.insert(0, name)
+    e_name.pack(fill="x", pady=(5, 12))
 
-    row2 = tk.Frame(frame)
-    row2.pack(fill="x", pady=5)
+    ttk.Label(frame, text="Path").pack(anchor="w")
 
-    tk.Label(row2, text="Path", width=15, anchor="w").pack(side="left")
-
-    e_path = tk.Entry(row2, width=ENTRY_WIDTH)
-    e_path.pack(side="left", fill="x", expand=True)
+    e_path = ttk.Entry(frame)
     e_path.insert(0, path_value)
+    e_path.pack(fill="x", pady=(5, 12))
 
-    tk.Label(
+    ttk.Label(
         frame,
-        text="This disk will be displayed in the Conky panel.",
-        fg="gray",
-        font=FONT_NOTE
-    ).pack(pady=15)
+        text="This disk will be displayed in the Conky panel."
+    ).pack(anchor="w")
 
-    bottom = tk.Frame(frame)
-    bottom.pack(side="bottom", fill="x")
+    btns = ttk.Frame(win, padding=(20, 12))
+    btns.pack(side="bottom", fill="x")
 
     def save():
 
-        name = e_name.get().strip()
-        path_value = e_path.get().strip()
+        new_name = e_name.get().strip()
+        new_path = e_path.get().strip()
 
-        if not name or not path_value:
+        if not new_name or not new_path:
+            messagebox.showwarning("Warning", "Please fill in both fields")
             return
 
-        values = (idx, name, path_value)
+        values = (idx, new_name, new_path)
 
         if edit:
             tree_conky.item(item, values=values)
-
         else:
             tree_conky.insert("", "end", values=values)
 
         win.destroy()
 
-    tk.Button(bottom, text="Save", width=12, command=save).pack(side="right", padx=5)
-    tk.Button(bottom, text="Cancel", width=12, command=win.destroy).pack(side="right")
+    ttk.Button(btns, text="Cancel", command=win.destroy).pack(side="right")
+    ttk.Button(btns, text="Save", command=save).pack(side="right", padx=5)
+
+    e_name.focus()
+
+    win.bind("<Return>", lambda e: save())
+    win.bind("<Escape>", lambda e: win.destroy())
 
 
 def delete_conky():
@@ -612,11 +736,40 @@ def save_conky():
     subprocess.run(["pkill", "conky"])
     subprocess.Popen(["conky"])
 
-    messagebox.showinfo("OK", "Conky updated")
+    messagebox.showinfo("Saved", "Conky updated")
 
 ########################################################
-# FILEBROWSER
+# FILEBROWSER TAB
 ########################################################
+
+def build_filebrowser_tab(parent):
+
+    global en_fb_path, lbl_fb_status, btn_fb_stop, btn_fb_start
+
+    content, toolbar = build_page(
+        parent,
+        "FileBrowser",
+        "Web-based file manager exposed on the local network."
+    )
+
+    ttk.Label(content, text="Root Path").pack(anchor="w")
+
+    en_fb_path = ttk.Entry(content)
+    en_fb_path.pack(fill="x", pady=(6, 20))
+
+    ttk.Label(content, text="Service Status").pack(anchor="w")
+
+    lbl_fb_status = status_badge(content)
+    lbl_fb_status.pack(anchor="w", pady=(6, 0))
+
+    ttk.Button(toolbar, text="Refresh Status", command=refresh_filebrowser_status).pack(side="left")
+
+    btn_fb_stop = ttk.Button(toolbar, text="Stop", command=stop_filebrowser)
+    btn_fb_stop.pack(side="left", padx=5)
+
+    btn_fb_start = ttk.Button(toolbar, text="Start", command=start_filebrowser)
+    btn_fb_start.pack(side="left")
+
 
 def load_filebrowser():
 
@@ -630,45 +783,275 @@ def load_filebrowser():
     m = re.search(r'-r\s+(.*?)\s', txt)
 
     if m:
-        txt_fb.insert("1.0", m.group(1))
+        en_fb_path.insert(0, m.group(1))
 
-    txt_fb.config(state="disabled")
+    en_fb_path.config(state="readonly")
 
 
 def refresh_filebrowser_status():
-    set_status_label(lbl_fb_status, service_is_active(FILEBROWSER_SERVICE))
+
+    active = service_is_active(FILEBROWSER_SERVICE)
+
+    set_status_badge(lbl_fb_status, active)
+
+    if active:
+        btn_fb_start.state(["disabled"])
+        btn_fb_stop.state(["!disabled"])
+    else:
+        btn_fb_start.state(["!disabled"])
+        btn_fb_stop.state(["disabled"])
 
 
 def start_filebrowser():
-    start_service(FILEBROWSER_SERVICE)
-    refresh_filebrowser_status()
+
+    if start_service(FILEBROWSER_SERVICE):
+        refresh_filebrowser_status()
 
 
 def stop_filebrowser():
-    stop_service(FILEBROWSER_SERVICE)
-    refresh_filebrowser_status()
+
+    if stop_service(FILEBROWSER_SERVICE):
+        refresh_filebrowser_status()
 
 ########################################################
-# SERVER MONITOR
+# SERVER MONITOR TAB
 ########################################################
+
+def build_monitor_tab(parent):
+
+    global lbl_monitor_status, tree_monitor, progress_monitor
+    global btn_monitor_install, btn_monitor_refresh, btn_monitor_restart
+    global btn_monitor_stop, btn_monitor_start
+
+    content, toolbar = build_page(
+        parent,
+        "Server Monitor",
+        "Controls the Sevastolink API used to feed the Rainmeter skin."
+    )
+
+    info = ttk.Frame(content)
+    info.pack(fill="x", pady=(0, 10))
+
+    lbl_monitor_status = status_badge(info)
+    lbl_monitor_status.pack(side="left")
+
+    ttk.Label(
+        info,
+        text=f"Endpoint: http://{socket.gethostname()}:{MONITOR_PORT}/api/rainmeter"
+    ).pack(side="left", padx=(12, 0))
+
+    progress_monitor = ttk.Progressbar(
+        content,
+        mode="determinate",
+        maximum=MONITOR_INSTALL_STEPS
+    )
+    progress_monitor.pack(fill="x", pady=(0, 10))
+
+    tree_monitor = build_treeview(
+        content,
+        columns=("metric", "value"),
+        headings=("Metric", "Value"),
+        widths=(240, 460)
+    )
+
+    btn_monitor_refresh = ttk.Button(toolbar, text="Refresh Data", command=fetch_monitor_data)
+    btn_monitor_refresh.pack(side="right")
+
+    btn_monitor_restart = ttk.Button(toolbar, text="Restart", command=restart_monitor)
+    btn_monitor_restart.pack(side="left", padx=(0, 5))
+
+    btn_monitor_stop = ttk.Button(toolbar, text="Stop", command=stop_monitor)
+    btn_monitor_stop.pack(side="left", padx=5)
+
+    btn_monitor_start = ttk.Button(toolbar, text="Start", command=start_monitor)
+    btn_monitor_start.pack(side="left", padx=(0, 5))
+
+    btn_monitor_install = ttk.Button(toolbar, text="Install Monitor", command=install_monitor)
+    btn_monitor_install.pack(side="left")
+
+
+def update_monitor_buttons(active):
+
+    if active:
+        btn_monitor_install.state(["disabled"])
+        btn_monitor_refresh.state(["!disabled"])
+        btn_monitor_restart.state(["!disabled"])
+        btn_monitor_stop.state(["!disabled"])
+        btn_monitor_start.state(["disabled"])
+    else:
+        btn_monitor_install.state(["!disabled"])
+        btn_monitor_refresh.state(["disabled"])
+        btn_monitor_restart.state(["disabled"])
+        btn_monitor_stop.state(["disabled"])
+        btn_monitor_start.state(["disabled"])
+
 
 def refresh_monitor_status():
-    set_status_label(lbl_monitor_status, service_is_active(MONITOR_SERVICE))
+
+    active = service_is_active(MONITOR_SERVICE)
+
+    set_status_badge(lbl_monitor_status, active)
+    update_monitor_buttons(active)
+
+
+def install_monitor():
+
+    proceed = messagebox.askyesno(
+        "Install Monitor",
+        "This will install python3-venv, curl, the FastAPI dependencies, "
+        "and register the \"sevastolink\" service so the Server Monitor "
+        "endpoint comes online.\n\nContinue?"
+    )
+
+    if not proceed:
+        return
+
+    btn_monitor_install.state(["disabled"])
+    progress_monitor["value"] = 0
+    root.update_idletasks()
+
+    ok, msg = run_monitor_install()
+
+    progress_monitor["value"] = 0
+
+    if not ok:
+        messagebox.showerror("Error", f"Failed to install the Server Monitor:\n{msg}")
+    else:
+        messagebox.showinfo("Installed", "Server Monitor installed and running.")
+
+    refresh_monitor_status()
+
+
+def advance_monitor_progress(step, description):
+
+    progress_monitor["value"] = step
+    lbl_monitor_status.config(text=f"Installing... ({description})", foreground=STATUS_OK)
+    root.update_idletasks()
+
+
+def run_monitor_install():
+    """Reproduces Script_Server-Monitor-1.0.sh: installs the OS packages,
+    creates the venv, writes api.py, and registers/starts the systemd
+    service that exposes the Rainmeter endpoint."""
+
+    advance_monitor_progress(1, "updating packages")
+    ok, msg = run_sudo(["apt-get", "update"])
+
+    if not ok:
+        return False, msg
+
+    advance_monitor_progress(2, "installing OS dependencies")
+    ok, msg = run_sudo(["apt-get", "install", "-y", "python3", "python3-venv", "python3-pip", "curl"])
+
+    if not ok:
+        return False, msg
+
+    advance_monitor_progress(3, "writing api.py")
+    try:
+        MONITOR_INSTALL_DIR.mkdir(parents=True, exist_ok=True)
+        MONITOR_API_PATH.write_text(MONITOR_API_PY)
+
+    except OSError as e:
+        return False, str(e)
+
+    advance_monitor_progress(4, "creating virtual environment")
+    if not MONITOR_VENV_DIR.exists():
+
+        result = subprocess.run(
+            ["python3", "-m", "venv", str(MONITOR_VENV_DIR)],
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode != 0:
+            return False, result.stderr.strip()
+
+    pip_bin = MONITOR_VENV_DIR / "bin" / "pip"
+
+    advance_monitor_progress(5, "upgrading pip")
+    result = subprocess.run(
+        [str(pip_bin), "install", "--upgrade", "pip"],
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        return False, result.stderr.strip()
+
+    advance_monitor_progress(6, "installing Python packages")
+    result = subprocess.run(
+        [str(pip_bin), "install", "fastapi", "uvicorn", "psutil"],
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode != 0:
+        return False, result.stderr.strip()
+
+    python_bin = MONITOR_VENV_DIR / "bin" / "python"
+
+    unit = f"""[Unit]
+Description=Sevastolink Monitor API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={os.environ.get("USER", "")}
+WorkingDirectory={MONITOR_INSTALL_DIR}
+ExecStart={python_bin} {MONITOR_API_PATH}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+"""
+
+    advance_monitor_progress(7, "writing service file")
+    Path("/tmp/sevastolink.service").write_text(unit)
+
+    ok, msg = run_sudo(["cp", "/tmp/sevastolink.service", MONITOR_SERVICE_UNIT_PATH])
+
+    if not ok:
+        return False, msg
+
+    advance_monitor_progress(8, "reloading systemd")
+    ok, msg = run_sudo(["systemctl", "daemon-reload"])
+
+    if not ok:
+        return False, msg
+
+    advance_monitor_progress(9, "enabling service")
+    ok, msg = run_sudo(["systemctl", "enable", MONITOR_SERVICE])
+
+    if not ok:
+        return False, msg
+
+    advance_monitor_progress(10, "starting service")
+    ok, msg = run_sudo(["systemctl", "restart", MONITOR_SERVICE])
+
+    if not ok:
+        return False, msg
+
+    return True, "Service installed"
 
 
 def start_monitor():
-    start_service(MONITOR_SERVICE)
-    refresh_monitor_status()
+
+    if start_service(MONITOR_SERVICE):
+        refresh_monitor_status()
 
 
 def stop_monitor():
-    stop_service(MONITOR_SERVICE)
-    refresh_monitor_status()
+
+    if stop_service(MONITOR_SERVICE):
+        refresh_monitor_status()
 
 
 def restart_monitor():
-    restart_service(MONITOR_SERVICE)
-    refresh_monitor_status()
+
+    if restart_service(MONITOR_SERVICE):
+        refresh_monitor_status()
 
 
 def fetch_monitor_data():
@@ -682,10 +1065,6 @@ def fetch_monitor_data():
             data = response.read().decode()
 
     except Exception:
-        messagebox.showerror(
-            "Error",
-            "Could not reach the Server Monitor API.\nMake sure the service is running."
-        )
         refresh_monitor_status()
         return
 
@@ -698,52 +1077,33 @@ def fetch_monitor_data():
     refresh_monitor_status()
 
 ########################################################
-# BUTTONS - SHARES
+# TAB CHANGE - AUTO REFRESH SERVER MONITOR
 ########################################################
 
-tk.Button(toolbar_shares, text="Add", width=BTN_WIDTH, command=edit_share).pack(side="left", padx=5)
-tk.Button(toolbar_shares, text="Delete", width=BTN_WIDTH, command=delete_share).pack(side="left", padx=5)
-tk.Button(toolbar_shares, text="Save", width=BTN_WIDTH, command=save_samba).pack(side="left", padx=5)
+def on_tab_changed(event):
 
-lbl_samba.pack(side="left", padx=20)
+    selected = event.widget.select()
+    tab_text = event.widget.tab(selected, "text")
 
-tk.Button(
-    toolbar_shares,
-    text="Change User",
-    width=BTN_WIDTH,
-    command=change_samba_user
-).pack(side="left")
+    if tab_text == "Server Monitor":
+        fetch_monitor_data()
+
+
+notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
 
 ########################################################
-# BUTTONS - CONKY
+# BUILD TABS
 ########################################################
 
-tk.Button(toolbar_conky, text="Add", width=BTN_WIDTH, command=edit_conky).pack(side="left", padx=5)
-tk.Button(toolbar_conky, text="Delete", width=BTN_WIDTH, command=delete_conky).pack(side="left", padx=5)
-tk.Button(toolbar_conky, text="Save", width=BTN_WIDTH, command=save_conky).pack(side="left", padx=5)
-
-########################################################
-# BUTTONS - FILEBROWSER
-########################################################
-
-tk.Button(toolbar_fb, text="Start", width=BTN_WIDTH, command=start_filebrowser).pack(side="left", padx=5)
-tk.Button(toolbar_fb, text="Stop", width=BTN_WIDTH, command=stop_filebrowser).pack(side="left", padx=5)
-tk.Button(toolbar_fb, text="Refresh Status", width=BTN_WIDTH, command=refresh_filebrowser_status).pack(side="left", padx=5)
-
-########################################################
-# BUTTONS - SERVER MONITOR
-########################################################
-
-tk.Button(toolbar_monitor, text="Start", width=BTN_WIDTH, command=start_monitor).pack(side="left", padx=5)
-tk.Button(toolbar_monitor, text="Stop", width=BTN_WIDTH, command=stop_monitor).pack(side="left", padx=5)
-tk.Button(toolbar_monitor, text="Restart", width=BTN_WIDTH, command=restart_monitor).pack(side="left", padx=5)
-tk.Button(toolbar_monitor, text="Refresh Data", width=BTN_WIDTH, command=fetch_monitor_data).pack(side="left", padx=5)
+build_shares_tab(tab_shares)
+build_conky_tab(tab_conky)
+build_filebrowser_tab(tab_filebrowser)
+build_monitor_tab(tab_monitor)
 
 ########################################################
 # INITIAL LOAD
 ########################################################
 
-load_samba_user()
 load_samba()
 load_conky()
 load_filebrowser()
