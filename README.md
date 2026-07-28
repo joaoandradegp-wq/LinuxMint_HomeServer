@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServ
 Choose the installer that matches your Linux Mint version and system architecture.
 | Version | Architecture | Release Date | Download |
 |----------|-------------|--------------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | 2026-06-25 | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.1.sh"><b>Click here</b></a> |
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | 2026-06-25 | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh"><b>Click here</b></a> |
 | Linux Mint 19.x XFCE | **32-bit (x86)** | 2026-04-26 | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh"><b>Click here</b></a> |
 
 ---
