@@ -15,36 +15,30 @@ It focuses on minimal resource usage while providing file sharing, secure remote
 
 ---
 
-## ⬇️ Releases
+### ⬇️ Releases
 
-### 🟢 Linux Mint 22.3 (64-bit)
+#### 🟢 Linux Mint Home Server (64-bit)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh | sudo bash
 ```
 
-### 🟡 Linux Mint 19 (32-bit)
+
+#### 🖥️ Server Panel + Server Monitor API Add-on
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py -o Server-Panel.py
 ```
 
-> **Recommended:** Use the **64-bit** installer if you're running Linux Mint 22.3 or newer.  
-> The **32-bit** version is provided for legacy hardware running Linux Mint 19.
+> **Recommended:** Install the **Server Panel** add-on to manage your Home Server components through a graphical interface.  
+> It provides controls for **Samba Shares, Conky disks, FileBrowser service, and Server Monitor API**, including service status and monitoring data.
 
 <br>
-
-Choose the installer that matches your Linux Mint version and system architecture.
 
 | Version | Architecture | Release | Download |
 |----------|-------------|---------|----------|
 | Linux Mint 22.3 XFCE | **64-bit (x64)** | **v2.2** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh"><b>Click here</b></a> |
-| Linux Mint 19.x XFCE | **32-bit (x86)** | **v1.0** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh"><b>Click here</b></a> |
-
-Server Panel + Server Monitor API Add-on
-| Version | Architecture | Release | Download |
-|----------|-------------|---------|----------|
-| Python 3 | **64-bit (x64)** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
+| Server Panel + Server Monitor API | **Python 3** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
 
 ---
 
