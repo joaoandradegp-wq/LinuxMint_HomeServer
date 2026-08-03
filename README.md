@@ -44,7 +44,7 @@ Choose the installer that matches your Linux Mint version and system architectur
 Server Panel + Server Monitor API Add-on
 | Version | Architecture | Release | Download |
 |----------|-------------|---------|----------|
-| Linux Mint 22.3 XFCE | **64-bit (x64)** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
+| Python 3 | **64-bit (x64)** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
 
 ---
 
