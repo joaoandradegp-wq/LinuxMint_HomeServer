@@ -41,6 +41,11 @@ Choose the installer that matches your Linux Mint version and system architectur
 | Linux Mint 22.3 XFCE | **64-bit (x64)** | **v2.2** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x64-2.2.sh"><b>Click here</b></a> |
 | Linux Mint 19.x XFCE | **32-bit (x86)** | **v1.0** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Script_HomeServer-x86-1.0.sh"><b>Click here</b></a> |
 
+Server Panel + Server Monitor API Add-on
+| Version | Architecture | Release | Download |
+|----------|-------------|---------|----------|
+| Linux Mint 22.3 XFCE | **64-bit (x64)** | **v1.1** | <a href="https://raw.githubusercontent.com/joaoandradegp-wq/LinuxMint_HomeServer/refs/heads/main/Server-Panel-1.1.py"><b>Click here</b></a> |
+
 ---
 
 ## ✨ Script Details
